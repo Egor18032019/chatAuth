@@ -4,7 +4,18 @@ const TOPIC = '/queue/message';
 // const TOPIC = '/user/queue/reply';
 const BASE_URL_API = "/api";
 const BASE_URL_SEND = "/send";
+
+
+const api = "/api";
+const auth = "/auth";
+const login = "/login";
+const url = "http://localhost:8080";
+// const url = "";
 export {
+    url,
+    api,
+    auth,
+    login,
     SOCKET_URL,
     BASE_URL_API,
     BASE_URL_SEND,

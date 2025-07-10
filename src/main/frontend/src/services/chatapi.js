@@ -4,7 +4,8 @@ const api = Axios.create({
     baseURL: BASE_URL_API
 });
 
-const token = "1eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIlJPTEVfVVNFUiJdLCJpZCI6MTAwMDAxLCJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJzdWIiOiJ1c2VyIiwiaWF0IjoxNzUyMTQ0MzI5LCJleHAiOjE3NTIyODgzMjl9.f1WLCPgRDKP2z7HjqPZygTaxVGMd7qOVSfZBv0Dt7WQ"
+const token ="eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIlJPTEVfVVNFUiJdLCJpZCI6MTAwMDAxLCJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJzdWIiOiJ1c2VyIiwiaWF0IjoxNzUyMTUxODg2LCJleHAiOjE3NTIyOTU4ODZ9.yET_BX5pUPtv_vehcDyHtf2gc6mWGD9NiEQX2KpnwOQ"
+
 const chatAPI = {
     // getMessages: (groupId) => {
     //     return api.get(`messages/${groupId}`);

@@ -1,0 +1,12 @@
+{
+    "links": [
+        {
+            "label": "Root",
+            "href": "/root"
+        },
+        {
+            "label": "Info(админка)",
+            "href": "/admin"
+        }
+    ]
+}

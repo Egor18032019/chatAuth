@@ -1,0 +1,68 @@
+.navi {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Общий контейнер меню */
+.menu-cards {
+    display: flex;
+    justify-content: space-around;
+    gap: 12px;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+/* Стиль карточки-ссылки */
+.card-link {
+    display: inline-block;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Состояние при наведении */
+.card-link:hover {
+    background-color: #f1f3f5;
+    color: #212529;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Активная карточка */
+.card-link.active {
+    background-color: #4263eb;
+    color: white;
+    border-color: #3b5bdb;
+    box-shadow: 0 2px 6px rgba(66, 99, 235, 0.3);
+}
+
+/* Активная карточка при наведении */
+.card-link.active:hover {
+    background-color: #3b5bdb;
+}
+
+/* Минимальная анимация при клике */
+.card-link:active {
+    transform: scale(0.98);
+}
+
+/* Для accessibility - фокус */
+.card-link:focus-visible {
+    outline: 2px solid #4dabf7;
+    outline-offset: 2px;
+}
+
+.logo-container {
+    font-family: 'Courier New', Courier, monospace;
+}

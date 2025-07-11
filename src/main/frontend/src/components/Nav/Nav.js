@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavLink } from "react-router-dom";
-import * as data from './link.json';
+import data from './link.json';
 import styles from './Nav.css';
 
 
 const Links = (links) => {
- 
+
     return (
         <div className="menu-cards">
             {data.links.map((link) => {
@@ -29,7 +29,10 @@ export default function Nav() {
                 <span>Giga chat education</span>
             </div>
 
-            <Links links={data}  />
+            <Links links={data} />
         </div>
     )
 }
+
+
+//    topics={["/user/" + user.username + "/queue/message"]} SOCKET_URL

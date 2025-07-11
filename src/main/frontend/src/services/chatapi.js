@@ -1,31 +1,71 @@
 import Axios from "axios";
 import { BASE_URL_API, BASE_URL_SEND } from "../utils/const";
+
+// Создаем экземпляр axios с базовыми настройками
 const api = Axios.create({
-    baseURL: BASE_URL_API
+  baseURL: BASE_URL_API,
+  timeout: 10000, // 10 секунд таймаут
 });
 
-const token ="eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIlJPTEVfVVNFUiJdLCJpZCI6MTAwMDAxLCJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJzdWIiOiJ1c2VyIiwiaWF0IjoxNzUyMTUxODg2LCJleHAiOjE3NTIyOTU4ODZ9.yET_BX5pUPtv_vehcDyHtf2gc6mWGD9NiEQX2KpnwOQ"
+// Функция для получения токена с проверкой
+const getAuthToken = () => {
+  const userData = localStorage.getItem("user");
+  if (!userData) {
+    throw new Error("No authentication token found");
+  }
+  
+  try {
+    const { token } = JSON.parse(userData);
+    return token;
+  } catch (error) {
+    console.error("Failed to parse user data:", error);
+    throw new Error("Invalid user data in localStorage");
+  }
+};
 
 const chatAPI = {
-    // getMessages: (groupId) => {
-    //     return api.get(`messages/${groupId}`);
-    // },
-    sendMessage: (username, text) => {
-        console.log('sendMessage ' + text);
-        let msg = {
-            sender: username,
-            content: text
+  sendMessage: async (username, text) => {
+    try {
+      console.log(`Sending message from ${username}: ${text}`);
+      
+      const token = getAuthToken();
+      
+      const message = {
+        sender: username,
+        content: text,
+        timestamp: new Date().toISOString() // Добавляем timestamp
+      };
+
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-        // Добавляем заголовки в конфигурацию запроса
+      };
 
-        const config = {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            }
-        };
-        return api.post(BASE_URL_SEND, msg, config)
+      const response = await api.post(BASE_URL_SEND, message, config);
+      
+      // Логируем ответ для отладки
+      console.log('Message sent successfully:', response.data);
+      
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Обрабатываем разные типы ошибок
+      if (error.response) {
+        // Сервер ответил с кодом ошибки
+        throw new Error(`Request failed with status ${error.response.status}`);
+      } else if (error.request) {
+        // Запрос был сделан, но ответа не было
+        throw new Error("No response received from server");
+      } else {
+        // Ошибка при настройке запроса
+        throw new Error(`Error setting up request: ${error.message}`);
+      }
     }
-}
-
+  }
+};
 
 export default chatAPI;

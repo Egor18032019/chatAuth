@@ -1,8 +1,8 @@
 {
     "links": [
         {
-            "label": "Root",
-            "href": "/root"
+            "label": "Chat",
+            "href": "/chat"
         },
         {
             "label": "Info(админка)",

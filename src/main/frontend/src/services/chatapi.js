@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { BASE_URL_API, BASE_URL_SEND } from "../utils/const";
+import { BASE_URL_API, BASE_URL_SEND, CHAT_HISTORY } from "../utils/const";
 
 // Создаем экземпляр axios с базовыми настройками
 const api = Axios.create({
@@ -13,7 +13,7 @@ const getAuthToken = () => {
   if (!userData) {
     throw new Error("No authentication token found");
   }
-  
+
   try {
     const { token } = JSON.parse(userData);
     return token;
@@ -23,13 +23,32 @@ const getAuthToken = () => {
   }
 };
 
-const chatAPI = {
+const giveMeAllPrevMessage = {
+  getHistory: async (roomId) => {
+    const token = getAuthToken();
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const response = await api.get(CHAT_HISTORY + "/" + roomId, config);
+
+    // Логируем ответ для отладки
+    console.log('Получили ' + response.data.length + " сообщений. ");
+
+    return response.data;
+  }
+}
+
+const sendMessageApi = {
   sendMessage: async (username, text) => {
     try {
       console.log(`Sending message from ${username}: ${text}`);
-      
+
       const token = getAuthToken();
-      
+
       const message = {
         sender: username,
         content: text,
@@ -44,15 +63,15 @@ const chatAPI = {
       };
 
       const response = await api.post(BASE_URL_SEND, message, config);
-      
+
       // Логируем ответ для отладки
       console.log('Message sent successfully:', response.data);
-      
+
       return response.data;
-      
+
     } catch (error) {
       console.error('Error sending message:', error);
-      
+
       // Обрабатываем разные типы ошибок
       if (error.response) {
         // Сервер ответил с кодом ошибки
@@ -67,5 +86,7 @@ const chatAPI = {
     }
   }
 };
-
-export default chatAPI;
+export {
+  sendMessageApi,
+  giveMeAllPrevMessage
+}

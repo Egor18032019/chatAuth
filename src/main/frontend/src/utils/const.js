@@ -4,6 +4,7 @@ const TOPIC = '/queue/message';
 // const TOPIC = '/user/queue/reply';
 const BASE_URL_API = "/api";
 const BASE_URL_SEND = "/send";
+const CHAT_HISTORY ="/chat/history";
 
 
 const api = "/api";
@@ -19,5 +20,6 @@ export {
     SOCKET_URL,
     BASE_URL_API,
     BASE_URL_SEND,
+    CHAT_HISTORY,
     TOPIC
 }

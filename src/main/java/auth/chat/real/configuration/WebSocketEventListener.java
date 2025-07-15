@@ -1,6 +1,6 @@
 package auth.chat.real.configuration;
 
-import auth.chat.real.model.ChatMessage;
+import auth.chat.real.model.ChatMessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -42,12 +42,12 @@ public class WebSocketEventListener {
         if (username != null) {
             System.out.println("User Disconnected : " + username);
 
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.setContent(username + " left the chat.");
+            ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
+            chatMessageDTO.setContent(username + " left the chat.");
 //            chatMessage.setSenderName(username);
-            chatMessage.setSender(username);
+            chatMessageDTO.setSender(username);
 
-            messagingTemplate.convertAndSend(TOPIC_GROUP, chatMessage);
+            messagingTemplate.convertAndSend(TOPIC_GROUP, chatMessageDTO);
         }
     }
 }

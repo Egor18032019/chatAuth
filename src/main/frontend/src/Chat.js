@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback ,useContext} from 'react';
+import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { AuthContext } from './providers/AuthProvider';
@@ -6,7 +6,7 @@ import Messages from './components/Messages/Messages';
 import Input from './components/Input/Input';
 import './App.css';
 import { SOCKET_URL } from "./utils/const";
-import chatAPI from './services/chatapi';
+import { sendMessageApi, giveMeAllPrevMessage } from './services/chatapi';
 const Chat = () => {
     const { state } = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
@@ -23,13 +23,13 @@ const Chat = () => {
 
         try {
 
-        chatAPI.sendMessage(state.email, messageText)
-            .then(res => {
-                console.log('Message sent', res);
-            })
-            .catch(err => {
-                console.error('Error sending message:', err);
-            });
+            sendMessageApi.sendMessage(state.email, messageText)
+                .then(res => {
+                    console.log('Message sent', res);
+                })
+                .catch(err => {
+                    console.error('Error sending message:', err);
+                });
 
             // clientRef.current.publish({
             //     destination: '/app/chat',
@@ -39,7 +39,7 @@ const Chat = () => {
             //         timestamp: new Date().toISOString()
             //     })
             // });
-            
+
         } catch (error) {
             console.error('Failed to send message:', error);
             messageQueue.current.push(messageText);
@@ -73,7 +73,7 @@ const Chat = () => {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 setConnectionStatus('CONNECTED');
-
+                const prevMessage = giveMeAllPrevMessage.getHistory(state.email)
                 const subscription = client.subscribe(TOPIC, (message) => {
                     try {
                         const newMessage = JSON.parse(message.body);
@@ -85,9 +85,6 @@ const Chat = () => {
 
                 clientRef.current.subscription = subscription;
 
-                // Отправляем сообщения из очереди
-                messageQueue.current.forEach(msg => sendMessage(msg));
-                messageQueue.current = [];
             },
             onDisconnect: () => {
                 setConnectionStatus('DISCONNECTED');

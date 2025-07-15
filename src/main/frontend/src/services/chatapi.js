@@ -43,16 +43,18 @@ const giveMeAllPrevMessage = {
 }
 
 const sendMessageApi = {
-  sendMessage: async (username, text) => {
+  sendMessage: async (chatId,username, text) => {
     try {
       console.log(`Sending message from ${username}: ${text}`);
 
       const token = getAuthToken();
 
       const message = {
+        chatId: chatId,
         sender: username,
         content: text,
-        timestamp: new Date().toISOString() // Добавляем timestamp
+        timestamp: new Date().toISOString(),
+        status: "SENT" //todo сделать enumsS
       };
 
       const config = {

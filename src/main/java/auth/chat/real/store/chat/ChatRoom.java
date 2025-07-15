@@ -16,6 +16,5 @@ import lombok.*;
 public class ChatRoom extends AbstractBaseEntity {
 
     private String chatId;
-    private String senderId;
-    private String recipientId;
+
 }

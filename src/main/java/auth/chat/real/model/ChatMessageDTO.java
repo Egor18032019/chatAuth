@@ -1,5 +1,6 @@
 package auth.chat.real.model;
 
+import auth.chat.real.utils.MessageStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,8 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessageDTO {
-
+    private String chatId;
     private String sender;
     private String content;
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp;
+    private MessageStatus status;
 }

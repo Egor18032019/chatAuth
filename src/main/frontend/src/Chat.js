@@ -13,32 +13,28 @@ const Chat = () => {
     const [connectionStatus, setConnectionStatus] = useState('DISCONNECTED');
     const clientRef = useRef(null);
     const messageQueue = useRef([]);
-
+    const chatId = "firstRoom"
     const sendMessage = useCallback((messageText) => {
+
         if (!state.isLoggedIn || connectionStatus !== 'CONNECTED' || !clientRef.current) {
             messageQueue.current.push(messageText);
             console.warn('Message queued - not logged in or connection not ready');
-            return;
+     
         }
 
         try {
 
-            sendMessageApi.sendMessage(state.email, messageText)
+            sendMessageApi.sendMessage(chatId, state.email, messageText)
                 .then(res => {
                     console.log('Message sent', res);
+                    setConnectionStatus("CONNECTED")
                 })
                 .catch(err => {
+                    setConnectionStatus("DISCONNECTED")
+                     messageQueue.current.push(messageText);
                     console.error('Error sending message:', err);
                 });
 
-            // clientRef.current.publish({
-            //     destination: '/app/chat',
-            //     body: JSON.stringify({
-            //         text: messageText,
-            //         sender: state.email,
-            //         timestamp: new Date().toISOString()
-            //     })
-            // });
 
         } catch (error) {
             console.error('Failed to send message:', error);
@@ -50,15 +46,23 @@ const Chat = () => {
         if (connectionStatus === 'CONNECTED' && messageQueue.current.length > 0) {
             const messagesToSend = [...messageQueue.current];
             messageQueue.current = [];
-
-            messagesToSend.forEach(msg => sendMessage(msg));
+            //todo обдумать
+            messagesToSend.forEach(msg => (
+                sendMessageApi.sendMessage(chatId, state.email, msg)
+                    .then(res => {
+                        console.log('Message sent', res);
+                    })
+                    .catch(err => {
+                        console.error('Error sending message:', err);
+                    })
+            ));
         }
     }, [connectionStatus, sendMessage]);
 
     useEffect(() => {
         if (!state.isLoggedIn || !state.token) return;
 
-        const TOPIC = `/user/${state.email}/queue/message`;
+        const TOPIC = `/user/${chatId}/queue/message`;
 
         const client = new Client({
             webSocketFactory: () => new SockJS(SOCKET_URL),
@@ -73,7 +77,16 @@ const Chat = () => {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 setConnectionStatus('CONNECTED');
-                const prevMessage = giveMeAllPrevMessage.getHistory(state.email)
+                const prevMessage = giveMeAllPrevMessage.getHistory(chatId)
+                    .then(res => {
+                        console.log('Получили историю в размере ', res.length);
+                        setMessages(res);
+                    })
+                    .catch(err => {
+                        console.error('Error history message:', err);
+                    });
+
+
                 const subscription = client.subscribe(TOPIC, (message) => {
                     try {
                         const newMessage = JSON.parse(message.body);
@@ -105,7 +118,7 @@ const Chat = () => {
                 clientRef.current = null;
             }
         };
-    }, [state.isLoggedIn, state.email, state.token]);
+    }, [state.isLoggedIn, state.chatId, state.token]);
 
     if (!state.isLoggedIn) {
         return <div>Пожалуйста, войдите для доступа к чату</div>;

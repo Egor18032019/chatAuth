@@ -64,8 +64,6 @@ const Login = () => {
         return response.json();
       })
       .then(data => {
-        console.log('Response data:', data);
-
         if (data.token) {
           localStorage.setItem('user', JSON.stringify({ email, token: data.token }));
 

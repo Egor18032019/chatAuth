@@ -64,6 +64,7 @@ public class SecurityConfiguration {
                         .requestMatchers(EndPoint.ADMIN + "/**").hasRole("ADMIN")
                         .requestMatchers(EndPoint.MANAGER + "/**").hasRole("MANAGER")
 //                        .requestMatchers(WS_CHAT + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
+                        .requestMatchers("/files/upload"  + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers("/api/send"  + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()

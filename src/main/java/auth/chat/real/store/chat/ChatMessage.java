@@ -23,4 +23,5 @@ public class ChatMessage extends AbstractBaseEntity {
     private String content;
     private LocalDateTime timestamp;
     private MessageStatus status;
+
 }

@@ -15,4 +15,5 @@ public class ChatMessageDTO {
     private String content;
     private LocalDateTime timestamp;
     private MessageStatus status;
+
 }

@@ -4,9 +4,10 @@ import SockJS from 'sockjs-client';
 import { AuthContext } from './providers/AuthProvider';
 import Messages from './components/Messages/Messages';
 import Input from './components/Input/Input';
+import FileUpload from './components/FileUpload/FileUpload';
 import './App.css';
 import { SOCKET_URL } from "./utils/const";
-import { sendMessageApi, giveMeAllPrevMessage } from './services/chatapi';
+import { sendChatApi, giveMeAllPrevMessage } from './services/chatapi';
 const Chat = () => {
     const { state } = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
@@ -19,19 +20,19 @@ const Chat = () => {
         if (!state.isLoggedIn || connectionStatus !== 'CONNECTED' || !clientRef.current) {
             messageQueue.current.push(messageText);
             console.warn('Message queued - not logged in or connection not ready');
-     
+
         }
 
         try {
 
-            sendMessageApi.sendMessage(chatId, state.email, messageText)
+            sendChatApi.sendMessage(chatId, state.email, messageText)
                 .then(res => {
                     console.log('Message sent', res);
                     setConnectionStatus("CONNECTED")
                 })
                 .catch(err => {
                     setConnectionStatus("DISCONNECTED")
-                     messageQueue.current.push(messageText);
+                    messageQueue.current.push(messageText);
                     console.error('Error sending message:', err);
                 });
 
@@ -48,7 +49,7 @@ const Chat = () => {
             messageQueue.current = [];
             //todo обдумать
             messagesToSend.forEach(msg => (
-                sendMessageApi.sendMessage(chatId, state.email, msg)
+                sendChatApi.sendMessage(chatId, state.email, msg)
                     .then(res => {
                         console.log('Message sent', res);
                     })
@@ -118,7 +119,7 @@ const Chat = () => {
                 clientRef.current = null;
             }
         };
-    }, [state.isLoggedIn, state.chatId, state.token]);
+    }, [state.isLoggedIn, state.email, state.token]);
 
     if (!state.isLoggedIn) {
         return <div>Пожалуйста, войдите для доступа к чату</div>;
@@ -142,7 +143,10 @@ const Chat = () => {
                 onSendMessage={sendMessage}
                 isConnected={connectionStatus === 'CONNECTED'}
             />
-
+            <FileUpload
+                chatId={chatId}
+                username={state.email}
+            />
             {messageQueue.current.length > 0 && (
                 <div className="message-queue-notice">
                     {messageQueue.current.length} сообщений в очереди

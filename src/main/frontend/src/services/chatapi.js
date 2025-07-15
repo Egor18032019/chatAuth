@@ -42,8 +42,8 @@ const giveMeAllPrevMessage = {
   }
 }
 
-const sendMessageApi = {
-  sendMessage: async (chatId,username, text) => {
+const sendChatApi = {
+  sendMessage: async (chatId, username, text) => {
     try {
       console.log(`Sending message from ${username}: ${text}`);
 
@@ -64,7 +64,9 @@ const sendMessageApi = {
         }
       };
 
-      const response = await api.post(BASE_URL_SEND, message, config);
+      const response = await api.post(BASE_URL_SEND, 
+        message,
+         config);
 
       // Логируем ответ для отладки
       console.log('Message sent successfully:', response.data);
@@ -86,9 +88,15 @@ const sendMessageApi = {
         throw new Error(`Error setting up request: ${error.message}`);
       }
     }
+  },
+  sendFile: async () => {
+    console.log("нужно ли нам ?")
   }
 };
+
+
+
 export {
-  sendMessageApi,
-  giveMeAllPrevMessage
+  sendChatApi,
+  giveMeAllPrevMessage,
 }

@@ -45,6 +45,7 @@ public class ChatController {
         message.setContent(messageDTO.getContent());
         message.setTimestamp(messageDTO.getTimestamp() != null ? messageDTO.getTimestamp() : LocalDateTime.now());
         message.setStatus(messageDTO.getStatus());
+
         ChatMessage saved = messageRepository.save(message);
 
 //        template.convertAndSend(message.getSender(), message);

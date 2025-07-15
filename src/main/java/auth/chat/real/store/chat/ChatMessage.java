@@ -21,7 +21,6 @@ public class ChatMessage extends AbstractBaseEntity {
     private String sender;
     private String content;
     private String roomId; // если есть комнаты
-
     private LocalDateTime timestamp;
 
 }

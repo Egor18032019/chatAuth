@@ -7,7 +7,7 @@ import styles from './Nav.css';
 const Links = (links) => {
 
     return (
-        <div className="menu-cards">
+        <div className="cards-menu">
             {data.links.map((link) => {
 
                 return (

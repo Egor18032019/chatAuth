@@ -24,12 +24,10 @@ import static auth.chat.real.utils.EndPointWebSocket.QUEUE_MESSAGE;
 public class ChatController {
     private final SimpMessagingTemplate template;
     private final ChatMessageRepository messageRepository;
-    private final ChatRoomService chatRoomService;
 
     public ChatController(SimpMessagingTemplate template, ChatMessageRepository messageRepository, ChatRoomService chatRoomService) {
         this.template = template;
         this.messageRepository = messageRepository;
-        this.chatRoomService = chatRoomService;
     }
 
 

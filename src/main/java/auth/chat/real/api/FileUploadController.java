@@ -1,6 +1,9 @@
 package auth.chat.real.api;
 
 import auth.chat.real.model.ChatMessageDTO;
+import auth.chat.real.store.chat.ChatMessage;
+import auth.chat.real.store.chat.repository.ChatMessageRepository;
+import auth.chat.real.utils.MessageStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.ResponseEntity;
@@ -9,22 +12,23 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static auth.chat.real.utils.EndPointWebSocket.QUEUE_MESSAGE;
 
 @RestController
 @RequestMapping("/files")
-
 public class FileUploadController {
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final ChatMessageRepository messageRepository;
     private final SimpMessagingTemplate template;
     //Здесь мы сохраняем файлы в папку uploads и возвращаем ссылку для скачивания.
     //todoД переделать на s3 ?
     private final Path uploadDir = Paths.get("uploads");
 
-    public FileUploadController(SimpMessagingTemplate template) throws Exception {
+    public FileUploadController(ChatMessageRepository messageRepository, SimpMessagingTemplate template) throws Exception {
+        this.messageRepository = messageRepository;
         this.template = template;
         Files.createDirectories(uploadDir);
     }
@@ -42,10 +46,18 @@ public class FileUploadController {
         ChatMessageDTO message = objectMapper.readValue(messageJson, ChatMessageDTO.class);
         String fileUrl = "/files/download/" + filename;
         message.setContent("/files/download/" + filename);
+        ChatMessage messageForSave = new ChatMessage();
+        messageForSave.setChatId(message.getChatId());
+        messageForSave.setSender(message.getSender());
 
+        messageForSave.setContent(message.getContent());
+        messageForSave.setTimestamp(message.getTimestamp() != null ? message.getTimestamp() : LocalDateTime.now());
+        messageForSave.setStatus(MessageStatus.DELIVERED);
+
+        ChatMessage saved = messageRepository.save(messageForSave);
         template.convertAndSendToUser(message.getChatId(),
                 QUEUE_MESSAGE,
-                message);
+                saved);
         return ResponseEntity.ok(fileUrl);
     }
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Status } from "../../utils/const"
 
 function FileUpload({ chatId, username }) {
     const [file, setFile] = useState(null);
@@ -32,7 +32,7 @@ function FileUpload({ chatId, username }) {
             sender: username,
             content: "", // заменит сервер
             timestamp: new Date().toISOString(),
-            status: "SENT"
+            status: Status.SENT
         };
 
         formData.append("message", JSON.stringify(message));

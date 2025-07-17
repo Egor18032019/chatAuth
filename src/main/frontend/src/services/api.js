@@ -64,9 +64,9 @@ const sendChatApi = {
         }
       };
 
-      const response = await api.post(BASE_URL_SEND, 
+      const response = await api.post(BASE_URL_SEND,
         message,
-         config);
+        config);
 
       // Логируем ответ для отладки
       console.log('Message sent successfully:', response.data);
@@ -94,9 +94,28 @@ const sendChatApi = {
   }
 };
 
+ 
+const sendToServer = async (data) => {
+  const token = getAuthToken();
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+    const response = await api.post("/location", data, config);
+    console.log('Отправлено на сервер:', response);
+  } catch (error) {
+    console.error('Ошибка отправки, сохраняем в очередь:', error);
+
+  }
+};
 
 
 export {
   sendChatApi,
   giveMeAllPrevMessage,
+  sendToServer
 }

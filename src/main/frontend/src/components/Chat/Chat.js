@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { AuthContext } from './providers/AuthProvider';
-import Messages from './components/Messages/Messages';
-import Input from './components/Input/Input';
-import FileUpload from './components/FileUpload/FileUpload';
-import './App.css';
-import { SOCKET_URL } from "./utils/const";
-import { sendChatApi, giveMeAllPrevMessage } from './services/chatapi';
+import { AuthContext } from '../../providers/AuthProvider';
+import Messages from '../Messages/Messages';
+import Input from '../Input/Input';
+import LocationButton from '../Location/LocationButton';
+import FileUpload from '../FileUpload/FileUpload';
+import './Chat.css';
+import { SOCKET_URL } from "../../utils/const";
+import { sendChatApi, giveMeAllPrevMessage } from '../../services/api';
 const Chat = () => {
     const { state } = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
@@ -127,10 +128,12 @@ const Chat = () => {
 
     return (
         <div className="chat-container">
+              <h2>Чат</h2>
             <div className="chat-header">
-                <h2>Чат</h2>
+              
                 <div className={`connection-status ${connectionStatus.toLowerCase()}`}>
-                    Статус: {connectionStatus}
+                    <span class="status-text">Статус:  {connectionStatus}</span>
+                    <LocationButton />
                 </div>
             </div>
 

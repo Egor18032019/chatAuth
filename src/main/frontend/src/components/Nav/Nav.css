@@ -4,7 +4,7 @@
 }
 
 /* Общий контейнер меню */
-.menu-cards {
+.cards-menu {
     display: flex;
     justify-content: space-around;
     gap: 12px;

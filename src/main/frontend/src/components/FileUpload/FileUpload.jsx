@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Status } from "../../utils/const"
+import { downloadWithAuth } from "../../services/api"
 
 function FileUpload({ chatId, username }) {
     const [file, setFile] = useState(null);
@@ -53,12 +54,13 @@ function FileUpload({ chatId, username }) {
                 throw new Error("Ошибка загрузки файла");
             }
 
-            const savedMessage = await response.json();
-
+            console.log(response.url)
+         
+        
             // Если WebSocket отправка нужна — отправляем
             // stompClient через props принимаем
             // if (stompClient && stompClient.connected) {
-            //     stompClient.send("/app/chat.send", {}, JSON.stringify(savedMessage));
+            //     stompClient.send("/app/chat.send", {}, JSON.stringify(url));
             // }
 
         } catch (err) {

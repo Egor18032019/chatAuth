@@ -39,7 +39,9 @@ const Messages = ({ messages, currentUser }) => {
                                 {sender}
                                 <span>{` in ${formatTime(timestamp)}`}</span>
                             </div>
-                            <div className="text">{content}</div>
+                            {/* <div className="text">{content}</div> */}
+                            <div className="text"
+                                dangerouslySetInnerHTML={{ __html: content }} />
                         </div>
                     </li>
                 );

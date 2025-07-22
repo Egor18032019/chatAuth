@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { BASE_URL_API, BASE_URL_SEND, CHAT_HISTORY } from "../utils/const";
+import { BASE_URL_API, BASE_URL_SEND, CHAT_HISTORY, PROJECT } from "../utils/const";
 
 // Создаем экземпляр axios с базовыми настройками
 const api = Axios.create({
@@ -94,7 +94,7 @@ const sendChatApi = {
   }
 };
 
- 
+
 const sendToServer = async (data) => {
   const token = getAuthToken();
   const config = {
@@ -113,9 +113,43 @@ const sendToServer = async (data) => {
   }
 };
 
+const giveMeMainProjects = async () => {
+  const token = getAuthToken();
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+  console.log("Запрашиваем проекты")
+  const response = await api.get(PROJECT, config);
+  console.log('Получено с сервера:', response.data.length);
+  return response;
+};
+const downloadWithAuth = async (fileUrl, filename) => {
+  const token = getAuthToken();
+  const response = await fetch(fileUrl, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename || "file";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
 
 export {
   sendChatApi,
   giveMeAllPrevMessage,
+  giveMeMainProjects,
+  downloadWithAuth,
   sendToServer
 }

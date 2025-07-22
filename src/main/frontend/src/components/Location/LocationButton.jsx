@@ -80,7 +80,7 @@ const LocationButton = () => {
     return (
         <div className="location-button-container">
             <button className="location-button"
-                onClick={handleClick}> Получить мое местоположение</button>
+                onClick={handleClick}> Отправить мое местоположение</button>
             {position && (
                 <p>
                     Координаты: широта — {position.latitude}, долгота — {position.longitude}<br />

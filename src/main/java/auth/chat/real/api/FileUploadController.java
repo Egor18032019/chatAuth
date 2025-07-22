@@ -3,6 +3,7 @@ package auth.chat.real.api;
 import auth.chat.real.model.ChatMessageDTO;
 import auth.chat.real.store.chat.ChatMessage;
 import auth.chat.real.store.chat.repository.ChatMessageRepository;
+import auth.chat.real.utils.EndPoint;
 import auth.chat.real.utils.MessageStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -18,7 +19,7 @@ import java.util.UUID;
 import static auth.chat.real.utils.EndPointWebSocket.QUEUE_MESSAGE;
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping(EndPoint.FILES)
 public class FileUploadController {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ChatMessageRepository messageRepository;
@@ -49,8 +50,15 @@ public class FileUploadController {
         ChatMessage messageForSave = new ChatMessage();
         messageForSave.setChatId(message.getChatId());
         messageForSave.setSender(message.getSender());
-
-        messageForSave.setContent(message.getContent());
+        //todo html иньекция ? придумать лучше ?
+        String url = """
+                <a href="http://localhost:8080 
+                """ + message.getContent() + "\"" + """
+                   target="_blank" rel="noopener noreferrer">
+                  Открыть Example.com
+                </a>
+                """;
+        messageForSave.setContent(url);
         messageForSave.setTimestamp(message.getTimestamp() != null ? message.getTimestamp() : LocalDateTime.now());
         messageForSave.setStatus(MessageStatus.DELIVERED);
 

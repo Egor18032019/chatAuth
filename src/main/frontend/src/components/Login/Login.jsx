@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../providers/AuthProvider';
-import { url, api, auth, login } from '../../utils/const';
+import { url, BASE_URL_API, auth, login } from '../../utils/const';
 
 const Login = () => {
   const { dispatch } = useContext(AuthContext);
@@ -50,7 +50,7 @@ const Login = () => {
   };
 
   const logIn = () => {
-    fetch(url + api + auth + login, {
+    fetch(url + BASE_URL_API + auth + login, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

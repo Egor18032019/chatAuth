@@ -6,63 +6,64 @@ import Messages from '../Messages/Messages';
 import Input from '../Input/Input';
 import LocationButton from '../Location/LocationButton';
 import FileUpload from '../FileUpload/FileUpload';
+import ProjectSelect from '../ProjectSelect/ProjectSelect';
 import './Chat.css';
 import { SOCKET_URL } from "../../utils/const";
 import { sendChatApi, giveMeAllPrevMessage } from '../../services/api';
+
 const Chat = () => {
     const { state } = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const [connectionStatus, setConnectionStatus] = useState('DISCONNECTED');
+    const [chatId, setChatId] = useState(""); // 🧠 теперь chatId — реактивный стейт
     const clientRef = useRef(null);
     const messageQueue = useRef([]);
-    const chatId = "firstRoom"
+
+    const handleProjectSelect = (projectId) => {
+        console.log("Выбран проект ID:", projectId);
+        setChatId(projectId);
+    };
+
     const sendMessage = useCallback((messageText) => {
-
-        if (!state.isLoggedIn || connectionStatus !== 'CONNECTED' || !clientRef.current) {
+        if (!state.isLoggedIn || connectionStatus !== 'CONNECTED' || !clientRef.current || !chatId) {
             messageQueue.current.push(messageText);
-            console.warn('Message queued - not logged in or connection not ready');
-
+            console.warn('Message queued - not ready');
+            return;
         }
 
         try {
-
             sendChatApi.sendMessage(chatId, state.email, messageText)
                 .then(res => {
                     console.log('Message sent', res);
-                    setConnectionStatus("CONNECTED")
+                    setConnectionStatus("CONNECTED");
                 })
                 .catch(err => {
-                    setConnectionStatus("DISCONNECTED")
+                    setConnectionStatus("DISCONNECTED");
                     messageQueue.current.push(messageText);
                     console.error('Error sending message:', err);
                 });
-
 
         } catch (error) {
             console.error('Failed to send message:', error);
             messageQueue.current.push(messageText);
         }
-    }, [connectionStatus, state.isLoggedIn, state.email]);
+    }, [connectionStatus, state.isLoggedIn, state.email, chatId]);
 
     useEffect(() => {
         if (connectionStatus === 'CONNECTED' && messageQueue.current.length > 0) {
             const messagesToSend = [...messageQueue.current];
             messageQueue.current = [];
-            //todo обдумать
-            messagesToSend.forEach(msg => (
+
+            messagesToSend.forEach(msg => {
                 sendChatApi.sendMessage(chatId, state.email, msg)
-                    .then(res => {
-                        console.log('Message sent', res);
-                    })
-                    .catch(err => {
-                        console.error('Error sending message:', err);
-                    })
-            ));
+                    .then(res => console.log('Queued message sent', res))
+                    .catch(err => console.error('Error sending queued message:', err));
+            });
         }
-    }, [connectionStatus, sendMessage]);
+    }, [connectionStatus, sendMessage, chatId, state.email]);
 
     useEffect(() => {
-        if (!state.isLoggedIn || !state.token) return;
+        if (!state.isLoggedIn || !state.token || !chatId) return;
 
         const TOPIC = `/user/${chatId}/queue/message`;
 
@@ -79,27 +80,28 @@ const Chat = () => {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 setConnectionStatus('CONNECTED');
-                const prevMessage = giveMeAllPrevMessage.getHistory(chatId)
+
+                // Загружаем историю сообщений
+                giveMeAllPrevMessage.getHistory(chatId)
                     .then(res => {
-                        console.log('Получили историю в размере ', res.length);
+                        console.log('История сообщений:', res.length);
                         setMessages(res);
                     })
                     .catch(err => {
-                        console.error('Error history message:', err);
+                        console.error('Ошибка получения истории:', err);
                     });
 
-
+                // Подписываемся на входящие сообщения
                 const subscription = client.subscribe(TOPIC, (message) => {
                     try {
                         const newMessage = JSON.parse(message.body);
                         setMessages(prev => [...prev, newMessage]);
                     } catch (error) {
-                        console.error('Error parsing message:', error);
+                        console.error('Ошибка парсинга сообщения:', error);
                     }
                 });
 
                 clientRef.current.subscription = subscription;
-
             },
             onDisconnect: () => {
                 setConnectionStatus('DISCONNECTED');
@@ -110,17 +112,16 @@ const Chat = () => {
         clientRef.current = client;
 
         return () => {
-            if (clientRef.current && clientRef.current.subscription) {
+            if (clientRef.current?.subscription) {
                 clientRef.current.subscription.unsubscribe();
                 clientRef.current.subscription = null;
             }
-
             if (clientRef.current) {
                 clientRef.current.deactivate();
                 clientRef.current = null;
             }
         };
-    }, [state.isLoggedIn, state.email, state.token]);
+    }, [state.isLoggedIn, state.token, chatId]);
 
     if (!state.isLoggedIn) {
         return <div>Пожалуйста, войдите для доступа к чату</div>;
@@ -128,11 +129,13 @@ const Chat = () => {
 
     return (
         <div className="chat-container">
-              <h2>Чат</h2>
+            <h2>Чат</h2>
+
+            <ProjectSelect onSelect={handleProjectSelect} />
+
             <div className="chat-header">
-              
                 <div className={`connection-status ${connectionStatus.toLowerCase()}`}>
-                    <span class="status-text">Статус:  {connectionStatus}</span>
+                    <span className="status-text">Статус: {connectionStatus}</span>
                     <LocationButton />
                 </div>
             </div>
@@ -146,10 +149,13 @@ const Chat = () => {
                 onSendMessage={sendMessage}
                 isConnected={connectionStatus === 'CONNECTED'}
             />
+
             <FileUpload
                 chatId={chatId}
                 username={state.email}
+                stompClient={clientRef.current}
             />
+
             {messageQueue.current.length > 0 && (
                 <div className="message-queue-notice">
                     {messageQueue.current.length} сообщений в очереди

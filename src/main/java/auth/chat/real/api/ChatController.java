@@ -1,14 +1,12 @@
 package auth.chat.real.api;
 
 import auth.chat.real.model.ChatMessageDTO;
-import auth.chat.real.service.ChatRoomService;
+import auth.chat.real.service.ProjectService;
 import auth.chat.real.store.chat.ChatMessage;
 import auth.chat.real.store.chat.repository.ChatMessageRepository;
 import auth.chat.real.utils.EndPoint;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,41 +23,50 @@ public class ChatController {
     private final SimpMessagingTemplate template;
     private final ChatMessageRepository messageRepository;
 
-    public ChatController(SimpMessagingTemplate template, ChatMessageRepository messageRepository, ChatRoomService chatRoomService) {
+    public ChatController(SimpMessagingTemplate template, ChatMessageRepository messageRepository, ProjectService projectService) {
         this.template = template;
         this.messageRepository = messageRepository;
     }
 
-
-    @PostMapping(value = "/send", consumes = "application/json", produces = "application/json")
+    /**
+     * Отправляет сообщение в указанный чат.
+     *
+     * @param messageDTO тело сообщения
+     * @param headers    заголовки запроса (используются?)
+     */
+    @PostMapping(value = EndPoint.SEND, consumes = "application/json", produces = "application/json")
     public void sendMessage(@RequestBody ChatMessageDTO messageDTO,
                             @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-
-
-        ChatMessage message = new ChatMessage();
-        message.setChatId(messageDTO.getChatId());
-        message.setSender(messageDTO.getSender());
-
-        message.setContent(messageDTO.getContent());
-        message.setTimestamp(messageDTO.getTimestamp() != null ? messageDTO.getTimestamp() : LocalDateTime.now());
-        message.setStatus(messageDTO.getStatus());
-
+        ChatMessage message = toEntity(messageDTO);
         ChatMessage saved = messageRepository.save(message);
 
-//        template.convertAndSend(message.getSender(), message);
-//        template.convertAndSend(TOPIC_GROUP, message);
         template.convertAndSendToUser(messageDTO.getChatId(), //todo обдумать логику
                 QUEUE_MESSAGE,
                 saved);
-//        template.convertAndSendToUser(message.getSenderId(),
-//                QUEUE_MESSAGE,
-//                message);
+
     }
 
-
-    @GetMapping("/chat/history/{roomId}")
+    /**
+     * Возвращает историю сообщений комнаты.
+     *
+     * @param roomId идентификатор комнаты
+     * @return список сообщений, отсортированный по времени
+     */
+    @GetMapping(EndPoint.CHAT + EndPoint.HISTORY + "/{roomId}")
     public List<ChatMessage> getHistory(@PathVariable String roomId) {
 
         return messageRepository.findByChatIdOrderByTimestampAsc(roomId);
+    }
+
+    private ChatMessage toEntity(ChatMessageDTO dto) {
+        ChatMessage entity = new ChatMessage();
+        entity.setChatId(dto.getChatId());
+        entity.setSender(dto.getSender());
+        entity.setContent(dto.getContent());
+        entity.setStatus(dto.getStatus());
+        entity.setTimestamp(
+                dto.getTimestamp() != null ? dto.getTimestamp() : LocalDateTime.now()
+        );
+        return entity;
     }
 }

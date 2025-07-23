@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { sendToServer } from '../../services/api';
-const LocationButton = () => {
+const LocationButton = (props) => {
     const [position, setPosition] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const STORAGE_KEY = 'pending_location_data';
 
     // Получаем и сохраняем геопозицию с меткой времени
     const handleClick = () => {
+        console.log(props.project)
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     const data = {
                         latitude: pos.coords.latitude,
                         longitude: pos.coords.longitude,
-                        timestamp: new Date().toISOString()
+                        timestamp: new Date().toISOString(),
+                        project: props.project
                     };
                     setPosition(data);
                     setErrorMessage('');

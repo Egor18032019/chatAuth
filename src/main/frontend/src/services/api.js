@@ -23,24 +23,21 @@ const getAuthToken = () => {
   }
 };
 
-const giveMeAllPrevMessage = {
-  getHistory: async (roomId) => {
-    const token = getAuthToken();
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    };
+const getHistory = async (roomId) => {
+  const token = getAuthToken();
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+  const response = await api.get(CHAT_HISTORY + "/" + roomId, config);
+  // Логируем ответ для отладки
+  console.log('Получили ' + response.data.length + " сообщений. ");
 
-    const response = await api.get(CHAT_HISTORY + "/" + roomId, config);
-
-    // Логируем ответ для отладки
-    console.log('Получили ' + response.data.length + " сообщений. ");
-
-    return response.data;
-  }
+  return response.data;
 }
+
 
 const sendChatApi = {
   sendMessage: async (chatId, username, text) => {
@@ -93,7 +90,6 @@ const sendChatApi = {
     console.log("нужно ли нам ?")
   }
 };
-
 
 const sendToServer = async (data) => {
   const token = getAuthToken();
@@ -148,7 +144,7 @@ const downloadWithAuth = async (fileUrl, filename) => {
 
 export {
   sendChatApi,
-  giveMeAllPrevMessage,
+  getHistory,
   giveMeMainProjects,
   downloadWithAuth,
   sendToServer

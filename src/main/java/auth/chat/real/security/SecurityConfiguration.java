@@ -67,6 +67,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/files/upload" + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers("/api/send" + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers(EndPoint.API + EndPoint.PROJECT + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
+                        .requestMatchers(EndPoint.API + EndPoint.LOCATION + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated())

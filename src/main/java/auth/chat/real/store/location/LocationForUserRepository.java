@@ -4,8 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface LocationForUserRepository extends JpaRepository<Location, String> {
-    Location findFirstByUsernameOrderByTimestampDesc(String username);
+public interface LocationForUserRepository extends JpaRepository<Location, Long> {
 
-    List<Location> findAllByUsername(String username);
+    Location findFirstByUser_usernameAndProject_NameOrderByTimestampDesc(String username, String project);
+
+    List<Location> findAllByUser_usernameAndProject_Name(String username, String project);
 }

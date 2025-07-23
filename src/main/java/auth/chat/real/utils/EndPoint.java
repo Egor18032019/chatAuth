@@ -20,5 +20,6 @@ public class EndPoint {
 
     public static final String CHAT = "/chat";
     public static final String HISTORY = "/history";
+    public static final String LOCATION = "/location";
     public static final String INFO = "/info";
 }

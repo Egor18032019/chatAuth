@@ -9,13 +9,13 @@ import FileUpload from '../FileUpload/FileUpload';
 import ProjectSelect from '../ProjectSelect/ProjectSelect';
 import './Chat.css';
 import { SOCKET_URL } from "../../utils/const";
-import { sendChatApi, giveMeAllPrevMessage } from '../../services/api';
+import { sendChatApi, getHistory } from '../../services/api';
 
 const Chat = () => {
     const { state } = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
-    const [connectionStatus, setConnectionStatus] = useState('DISCONNECTED');
-    const [chatId, setChatId] = useState(""); // 🧠 теперь chatId — реактивный стейт
+    const [connectionStatus, setConnectionStatus] = useState('LAUNCH');
+    const [chatId, setChatId] = useState("");  
     const clientRef = useRef(null);
     const messageQueue = useRef([]);
 
@@ -82,7 +82,7 @@ const Chat = () => {
                 setConnectionStatus('CONNECTED');
 
                 // Загружаем историю сообщений
-                giveMeAllPrevMessage.getHistory(chatId)
+                getHistory(chatId)
                     .then(res => {
                         console.log('История сообщений:', res.length);
                         setMessages(res);
@@ -136,7 +136,7 @@ const Chat = () => {
             <div className="chat-header">
                 <div className={`connection-status ${connectionStatus.toLowerCase()}`}>
                     <span className="status-text">Статус: {connectionStatus}</span>
-                    <LocationButton />
+                    <LocationButton project={chatId} />
                 </div>
             </div>
 

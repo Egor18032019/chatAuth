@@ -15,6 +15,8 @@ import auth.chat.real.store.project.Project;
 import java.util.ArrayList;
 import java.util.List;
 
+import static auth.chat.real.utils.UtilsFunctions.getCurrentUser;
+
 @RestController
 @RequestMapping(EndPoint.API)
 @Tag(name = "Project Controller", description = "Контроллер для проектов")
@@ -31,10 +33,5 @@ public class ProjectController {
                 .stream()
                 .map(ProjectDto::fromEntity)
                 .toList();
-    }
-
-    private User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return (User) auth.getPrincipal();
     }
 }

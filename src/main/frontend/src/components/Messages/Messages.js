@@ -40,6 +40,7 @@ const Messages = ({ messages, currentUser }) => {
                                 <span>{` in ${formatTime(timestamp)}`}</span>
                             </div>
                             {/* <div className="text">{content}</div> */}
+                                {/* //todo html иньекция ? придумать лучше ? */}
                             <div className="text"
                                 dangerouslySetInnerHTML={{ __html: content }} />
                         </div>

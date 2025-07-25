@@ -26,7 +26,7 @@ export default function Nav() {
     return (
         <div className="navi">
             <div className="logo-container">
-                <span>Giga chat education</span>
+                <span>Интерактивный электронный журнал общего строительного контроля </span>
             </div>
 
             <Links links={data} />

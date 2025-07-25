@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../providers/AuthProvider';
 import { url, BASE_URL_API, auth, login } from '../../utils/const';
-
+import './Login.css';
 const Login = () => {
   const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();

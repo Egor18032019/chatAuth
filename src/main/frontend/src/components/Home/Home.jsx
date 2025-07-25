@@ -35,7 +35,7 @@ const Home = () => {
           onClick={onButtonClick}
           value={state.isLoggedIn ? 'Log out' : 'Log in'}
         />
-        {state.isLoggedIn ? <div>Your email address is {state.email}</div> : <div />}
+        {state.isLoggedIn ? <p>Your email address is {state.email}</p> : <div />}
       </div>
     </div>
   )

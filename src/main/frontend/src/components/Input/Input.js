@@ -1,42 +1,36 @@
-import React, { useState } from 'react'
-import { Button,TextField } from '@mui/material';
-
+import React, { useState } from 'react';
+import './input.css';
 const Input = ({ onSendMessage }) => {
-    const [text, setText] = useState("")
+    const [text, setText] = useState("");
 
-    let onChange = (e) => {
-        setText(e.target.value)
-    }
+    const onChange = (e) => {
+        setText(e.target.value);
+    };
 
-    let onSubmit = () => {
-        setText("")
-        onSendMessage(text);
-    }
+    const onSubmit = () => {
+        if (text.trim()) {
+            onSendMessage(text);
+            setText("");
+        }
+    };
 
     return (
-        <div className="message-input">
-            <TextField
-                className="inputField"
-                label="Type your message here..."
-                placeholder="Enter your message and press ENTER"
-                onChange={e => onChange(e)}
-                margin="normal"
-                value={text}
-                onKeyPress={event => {
-                    if (event.key === 'Enter') {
-                        onSubmit(text);
-                    }
-                }}
-                style={{ height: "30px", width: "80%" }}
-            />
-
-            <Button variant="contained" color="primary" onClick={onSubmit}
-                  style={{ marginTop: "17px",height:" 53px"  }}>
-                Send
-            </Button>
+        <div className="message-input-container">
+            <div className="input-group">
+                <input
+                    type="text"
+                    className="message-input"
+                    placeholder="Type your message here..."
+                    value={text}
+                    onChange={onChange}
+                    onKeyPress={(e) => e.key === 'Enter' && onSubmit()}
+                />
+                <button className="send-button" onClick={onSubmit}>
+                    Send
+                </button>
+            </div>
         </div>
     );
-}
+};
 
-
-export default Input
+export default Input;

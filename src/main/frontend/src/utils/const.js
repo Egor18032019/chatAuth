@@ -7,8 +7,6 @@ const PROJECT = "/project";
 const BASE_URL_SEND = "/send";
 const CHAT_HISTORY = "/chat/history";
 
-
-const api = "/api";
 const auth = "/auth";
 const login = "/login";
 const url = "http://localhost:8080";
@@ -18,6 +16,16 @@ const Status = {
     SENT: "SENT",
     DELIVERED: "DELIVERED",
     RECEIVED: "RECEIVED"
+};
+const TABS = {
+    JOURNAL: 'Журнал работ',
+    CHAT: 'Чат с контролем',
+};
+
+const CONNECTION_STATUS = {
+    LAUNCH: 'LAUNCH',
+    CONNECTED: 'CONNECTED',
+    DISCONNECTED: 'DISCONNECTED',
 };
 
 export {
@@ -30,5 +38,7 @@ export {
     BASE_URL_SEND,
     CHAT_HISTORY,
     TOPIC,
-    Status
+    Status,
+    TABS,
+    CONNECTION_STATUS
 }

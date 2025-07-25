@@ -54,8 +54,8 @@ public class FileUploadController {
         String url = """
                 <a href="http://localhost:8080 
                 """ + message.getContent() + "\"" + """
-                   target="_blank" rel="noopener noreferrer">
-                  Открыть Example.com
+                 target="_blank" rel="noopener noreferrer">
+                Открыть\s""" + message.getContent() + """
                 </a>
                 """;
         messageForSave.setContent(url);

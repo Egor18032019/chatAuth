@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { sendToServer } from '../../services/api';
+import './LocationButton.css';
 const LocationButton = (props) => {
     const [position, setPosition] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { giveMeMainProjects } from "../../services/api"
+import './ProjectSelect.css';
 function ProjectSelect({ onSelect }) {
     const [projects, setProjects] = useState([]);
     const [selected, setSelected] = useState("");
@@ -29,7 +30,7 @@ function ProjectSelect({ onSelect }) {
     };
 
     return (
-        <div>
+        <div className="projects">
             <label htmlFor="project-select">Выберите проект: </label>
             <select id="project-select" value={selected} onChange={handleChange}>
                 <option value="">-- Выберите --</option>

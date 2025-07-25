@@ -1,0 +1,91 @@
+/* Основные стили для контейнера */
+.projects {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 500px;
+  margin: 20px auto;
+  position: relative;
+}
+
+/* Стили для label */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #555;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding-left: 5px;
+}
+
+/* Стили для select */
+select {
+  width: 100%;
+  padding: 12px 45px 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-image: 
+    linear-gradient(45deg, transparent 50%, #6a11cb 50%),
+    linear-gradient(135deg, #6a11cb 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 50%,
+    calc(100% - 15px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* Стили при наведении */
+select:hover {
+  border-color: #b5a1e5;
+  box-shadow: 0 4px 15px rgba(106, 17, 203, 0.1);
+}
+
+/* Стили при фокусе */
+select:focus {
+  border-color: #6a11cb;
+  box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+}
+ 
+select:focus ~ div::after {
+  transform: translateY(-30%) rotate(180deg);
+}
+
+/* Стили для options */
+option {
+  padding: 12px;
+  background-color: white;
+  color: #333;
+}
+
+option[value=""] {
+  color: #999;
+  font-style: italic;
+}
+
+option:hover {
+  background-color: #f3edff !important;
+}
+
+/* Анимация при появлении */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.projects {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+

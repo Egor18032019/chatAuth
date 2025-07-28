@@ -35,4 +35,3 @@ export default function Nav() {
 }
 
 
-//    topics={["/user/" + user.username + "/queue/message"]} SOCKET_URL

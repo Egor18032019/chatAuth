@@ -53,10 +53,7 @@ function FileUpload({ chatId, username }) {
             if (!response.ok) {
                 throw new Error("Ошибка загрузки файла");
             }
-
-            console.log(response.url)
-         
-        
+ 
             // Если WebSocket отправка нужна — отправляем
             // stompClient через props принимаем
             // if (stompClient && stompClient.connected) {

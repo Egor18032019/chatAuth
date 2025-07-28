@@ -1,54 +1,64 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
 import './WorkJournals.css';
+import InputControlJournal from "./InputControlJournal"
+import GeneralJournal from "./GeneralJournal"
+import SupervisionJournal from "./SupervisionJournal"
+import ActsHiddenWorksJournal from "./ActsHiddenWorksJournal"
+
+
+
+
 const WorkJournals = ({ chatId }) => {
     const { state } = useContext(AuthContext);
+    const [activeJournal, setActiveJournal] = useState('general');
+    const [activeType, setActiveType] = useState('Общий журнал работ');
+
+    const journalTypes = [
+        { id: 'general', name: 'Общий журнал работ' },
+        { id: 'input-control', name: 'Журнал входного контроля' },
+        { id: 'author-supervision', name: 'Журнал авторского надзора' },
+        { id: 'hidden-works', name: 'Акты скрытых работ' }
+    ];
+
+    const handleJournalChange = (journalId, journalName) => {
+        setActiveJournal(journalId);
+        setActiveType(journalName);
+    };
+
+    const renderJournalContent = () => {
+        switch (activeJournal) {
+            case 'input-control':
+                return <InputControlJournal chatId={chatId} />;
+            case 'author-supervision':
+                return <SupervisionJournal chatId={chatId} />;
+            case 'hidden-works':
+                return <ActsHiddenWorksJournal chatId={chatId} />;
+            default:
+                return <GeneralJournal chatId={chatId} />;
+        }
+    };
+
     return (
         <div className="work-journals-container">
             <aside className="sidebar">
                 <h3 className="sidebar-title">Типы журналов</h3>
                 <ul className="journal-types">
-                    <li className="journal-type active">Общий журнал работ</li>
-                    <li className="journal-type">Журнал входного контроля</li>
-                    <li className="journal-type">Журнал авторского надзора</li>
-                    <li className="journal-type">Акты скрытых работ</li>
+                    {journalTypes.map((type) => (
+                        <li
+                            key={type.id}
+                            className={`journal-type ${activeJournal === type.id ? 'active' : ''}`}
+                            onClick={() => handleJournalChange(type.id, type.name)}
+                        >
+                            {type.name}
+                        </li>
+                    ))}
                 </ul>
             </aside>
 
-            <div className="journal-content">
-                <div className="journal-header">
-                    <h2>Общий журнал работ - Объект #{chatId}</h2>
-                </div>
+            {renderJournalContent()}
 
-                <div className="entries-list">
-                    <div className="entry">
-                        <div className="entry-header">
-                            <span className="entry-author">Петров П.П. (Подрядчик)</span>
-                            <span className="entry-date">15.05.2023 14:30</span>
-                        </div>
-                        <div className="entry-content">
-                            Выполнена укладка асфальта на участке 100 м². Использован материал: асфальтобетон тип Б марки II.
-                        </div>
-                        <div className="entry-attachments">
-                            <div className="attachment">Фото 1</div>
-                            <div className="attachment">Фото 2</div>
-                            <div className="attachment">Акт №123</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="new-entry-form">
-                    <h3>Новая запись в журнале:</h3>
-                    <textarea
-                        className="entry-textarea"
-                        placeholder="Опишите выполненную работу или оставьте комментарий..."
-                    ></textarea>
-                    <div className="entry-actions">
-                        <button className="attach-button">Прикрепить файл</button>
-                        <button className="submit-button">Отправить</button>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };

@@ -43,8 +43,13 @@ const Work = () => {
                     .catch(err => addToQueue(text))
             );
         },
-        onDisconnect: () => setConnectionStatus(CONNECTION_STATUS.DISCONNECTED),
-        onMessage: msg => setMessages(prev => [...prev, msg]),
+        onDisconnect: useCallback(() => {
+            setConnectionStatus(CONNECTION_STATUS.DISCONNECTED);
+        }, []),
+        onMessage: useCallback((msg) => {
+            setMessages(prev => [...prev, msg]);
+        }, [])
+        // useCallback нужен, чтобы функции не менялись каждый раз.
     });
 
     /* ---------- Handlers ---------- */

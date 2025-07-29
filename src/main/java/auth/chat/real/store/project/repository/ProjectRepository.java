@@ -14,5 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     void deleteByNameAndId(String name, Long id);
 
+    Boolean existsByName(String name);
+
     Boolean existsByNameAndId(String name, Long id);
 }

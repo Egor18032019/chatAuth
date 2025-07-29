@@ -1,6 +1,5 @@
 package auth.chat.real.utils;
 
-import auth.chat.real.model.JournalEntryDto;
 import auth.chat.real.model.JournalEntryResponse;
 import auth.chat.real.store.journals.JournalEntry;
 import auth.chat.real.store.users.User;
@@ -14,21 +13,6 @@ public class UtilsFunctions {
         return (User) auth.getPrincipal();
     }
 
-    public static JournalEntry convertToEntity(JournalEntryDto dto) {
-        JournalEntry entry = new JournalEntry();
-        entry.setDeliveryDate(dto.getDeliveryDate());
-        entry.setMaterialName(dto.getMaterialName());
-        entry.setQuantity(dto.getQuantity());
-        entry.setSupplier(dto.getSupplier());
-        entry.setDocument(dto.getDocument());
-        entry.setInspectionResult(dto.getInspectionResult());
-        entry.setLabControlDecision(dto.getLabControlDecision());
-        entry.setLabControlResult(dto.getLabControlResult());
-        entry.setInspector(dto.getInspector());
-        entry.setActLink(dto.getActLink());
-        entry.setChatId(dto.getChatId());
-        return entry;
-    }
 
     public static JournalEntryResponse convertToResponse(JournalEntry entry) {
         JournalEntryResponse response = new JournalEntryResponse();
@@ -43,7 +27,7 @@ public class UtilsFunctions {
         response.setLabControlResult(entry.getLabControlResult());
         response.setInspector(entry.getInspector());
         response.setActLink(entry.getActLink());
-        response.setChatId(entry.getChatId());
+        response.setProjectName(entry.getProject().getName());
         return response;
     }
 }

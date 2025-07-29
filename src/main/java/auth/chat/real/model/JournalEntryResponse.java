@@ -17,7 +17,7 @@ public   class JournalEntryResponse {
     private String labControlResult;
     private String inspector;
     private String actLink;
-    private String chatId;
+    private String projectName;
 }
 
 /*

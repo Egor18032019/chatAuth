@@ -1,7 +1,9 @@
 package auth.chat.real.store.journals;
+
+import auth.chat.real.store.entity.AbstractBaseEntity;
+import auth.chat.real.store.project.Project;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -9,13 +11,13 @@ import java.time.LocalDate;
 @Table(name = "journal_entries")
 @Getter
 @Setter
-public class JournalEntry {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class JournalEntry extends AbstractBaseEntity {
 
     @Column(name = "delivery_date")
-    private String deliveryDate;
+    private String deliveryDate; //todo LocalDate
 
     @Column(name = "material_name")
     private String materialName;
@@ -25,7 +27,7 @@ public class JournalEntry {
     private String document;
 
     @Column(name = "inspection_result")
-    private String inspectionResult;
+    private String inspectionResult;//todo enum
 
     @Column(name = "lab_control_decision")
     private String labControlDecision;
@@ -38,6 +40,8 @@ public class JournalEntry {
     @Column(name = "act_link")
     private String actLink;
 
-    @Column(name = "chat_id")
-    private String chatId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "project")   // колонка в таблице project
+    private Project project;
+
 }

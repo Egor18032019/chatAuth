@@ -1,5 +1,7 @@
 package auth.chat.real.store;
 
+import auth.chat.real.store.journals.JournalEntry;
+import auth.chat.real.store.journals.JournalEntryRepository;
 import auth.chat.real.store.project.Project;
 import auth.chat.real.store.project.repository.ProjectRepository;
 import auth.chat.real.store.users.User;
@@ -18,11 +20,13 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProjectRepository projectRepository;
+    private final JournalEntryRepository journalEntryRepository;
 
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder, ProjectRepository projectRepository) {
+    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder, ProjectRepository projectRepository, JournalEntryRepository journalEntryRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.projectRepository = projectRepository;
+        this.journalEntryRepository = journalEntryRepository;
     }
 
     @Override
@@ -50,19 +54,58 @@ public class DataInitializer implements CommandLineRunner {
 
             userRepository.saveAll(List.of(admin, user, manager));
 
-            projectRepository.save(new Project("first", LocalDateTime.now(), admin));
-            projectRepository.save(new Project("second", LocalDateTime.now(), user));
-            projectRepository.save(new Project("three", LocalDateTime.now(), manager));
-
             projectRepository.save(new Project("1", LocalDateTime.now(), admin));
-            projectRepository.save(new Project("2", LocalDateTime.now(), user));
-            projectRepository.save(new Project("3", LocalDateTime.now(), manager));
-
-
+            Project first = new Project("first", LocalDateTime.now(), admin);
+            projectRepository.save(first);
             projectRepository.save(new Project("Москва", LocalDateTime.now(), admin));
+
+            projectRepository.save(new Project("2", LocalDateTime.now(), user));
+            Project second = new Project("second", LocalDateTime.now(), user);
+            projectRepository.save(second);
             projectRepository.save(new Project("Тула", LocalDateTime.now(), user));
+
+
+            projectRepository.save(new Project("3", LocalDateTime.now(), manager));
+            Project third = new Project("third", LocalDateTime.now(), manager);
+            projectRepository.save(third);
             projectRepository.save(new Project("Екатеринбург", LocalDateTime.now(), manager));
 
+            journalEntryRepository.save(new JournalEntry(
+                    "01.09.2024",
+                    "Проволока 1.5-ОЧ",
+                    "200кв",
+                    "ООО Альфа",
+                    "Сертификат качества № 123456",
+                    "Соответствует",
+                    "Не требуется",
+                    "Не требуется",
+                    "Петров",
+                    "https://example.com/act123.pdf",
+                    first));
+            journalEntryRepository.save(new JournalEntry(
+                    "01.09.2024",
+                    "Проволока 1.5-ОЧ",
+                    "200кв",
+                    "ООО Бета",
+                    "Сертификат качества № 123456",
+                    "Соответствует",
+                    "Не требуется",
+                    "Не требуется",
+                    "Иванов",
+                    "https://example.com/act123.pdf",
+                    second));
+            journalEntryRepository.save(new JournalEntry(
+                    "01.09.2024",
+                    "Проволока 1.5-ОЧ",
+                    "200кв",
+                    "ООО Третьяковка",
+                    "Сертификат качества № 123456",
+                    "Соответствует",
+                    "Не требуется",
+                    "Не требуется",
+                    "Сидоров",
+                    "https://example.com/act123.pdf",
+                    third));
             System.out.println("Created default users: admin, user, manager");
         }
     }

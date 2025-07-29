@@ -4,6 +4,8 @@ const TOPIC = '/queue/message';
 // const TOPIC = '/user/queue/reply';
 const BASE_URL_API = "/api";
 const PROJECT = "/project";
+const JournalEntry = "/journal-entries";
+
 const BASE_URL_SEND = "/send";
 const CHAT_HISTORY = "/chat/history";
 
@@ -31,6 +33,7 @@ const CONNECTION_STATUS = {
 export {
     url,
     PROJECT,
+    JournalEntry,
     auth,
     login,
     SOCKET_URL,

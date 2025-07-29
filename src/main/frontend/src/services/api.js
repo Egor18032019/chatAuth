@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { BASE_URL_API, BASE_URL_SEND, CHAT_HISTORY, PROJECT } from "../utils/const";
+import { BASE_URL_API, BASE_URL_SEND, CHAT_HISTORY, PROJECT, JournalEntry } from "../utils/const";
 
 // Создаем экземпляр axios с базовыми настройками
 const api = Axios.create({
@@ -117,11 +117,25 @@ const giveMeMainProjects = async () => {
       'Content-Type': 'application/json'
     }
   };
-  console.log("Запрашиваем проекты")
   const response = await api.get(PROJECT, config);
   console.log('Получено с сервера:', response.data.length);
   return response;
 };
+
+const giveMeMainJournalEntry = async (token, project) => {
+ 
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+  const url = JournalEntry + "/" + project;
+  const response = await api.get(url, config);
+  console.log('Получено с сервера:', response.data.journalEntries.length);
+  return response;
+};
+
 const downloadWithAuth = async (fileUrl, filename) => {
   const token = getAuthToken();
   const response = await fetch(fileUrl, {
@@ -145,6 +159,7 @@ const downloadWithAuth = async (fileUrl, filename) => {
 export {
   sendChatApi,
   getHistory,
+  giveMeMainJournalEntry,
   giveMeMainProjects,
   downloadWithAuth,
   sendToServer

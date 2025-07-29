@@ -1,21 +1,66 @@
-import React, { useState } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    useRef,
+    memo
+} from 'react';
 import './InputControlJournal.css';
+import { giveMeMainJournalEntry } from "../../services/api"
+// ---------- Компонент строки ----------
+const TableRow = memo(({ entry, onUpload }) => (
+    <tr key={entry.id}>
+        <td>{entry.id}</td>
+        <td>{entry.deliveryDate}</td>
+        <td>{entry.materialName}</td>
+        <td>{entry.quantity}</td>
+        <td>{entry.supplier}</td>
+        <td>{entry.document}</td>
+        <td>{entry.inspectionResult}</td>
+        <td>{entry.labControlDecision}</td>
+        <td>{entry.labControlResult}</td>
+        <td className="act-cell">
+            {entry.actLink ? (
+                <a href={entry.actLink} target="_blank" rel="noopener noreferrer" className="act-link">
+                    Просмотреть акт
+                </a>
+            ) : (
+                <button onClick={() => onUpload(entry.id)} className="upload-button">
+                    Загрузить акт
+                </button>
+            )}
+        </td>
+        <td>{entry.inspector}</td>
+    </tr>
+));
+
+
+
 const InputControlJournal = ({ chatId }) => {
     const [entries, setEntries] = useState([
-        {
-            id: 1,
-            deliveryDate: '01.09.2024',
-            materialName: 'Проволока 1.5-ОЧ',
-            quantity: '200кв',
-            supplier: 'ООО "Альфа"',
-            document: 'Сертификат качества № 123456',
-            inspectionResult: 'Соответствует',
-            labControlDecision: 'Не требуется',
-            labControlResult: 'Не требуется',
-            inspector: 'Иелюев',
-            actLink: 'https://example.com/act123.pdf'
-        }
     ]);
+    const tokenRef = useRef(null);
+    const getAuthToken = useCallback(() => {
+        if (tokenRef.current) return tokenRef.current;
+        const { token } = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token) throw new Error('401');
+        tokenRef.current = token;
+        return token;
+    }, []);
+
+    useEffect(() => {
+        if (!chatId) return;
+        getAuthToken();
+        let ignore = false;
+        giveMeMainJournalEntry(tokenRef.current, chatId)
+            .then(res => {
+                console.log(res.data.journalEntries)
+                !ignore && setEntries(res.data.journalEntries)
+            }
+            )
+            .catch(console.error);
+        return () => (ignore = true);
+    }, [chatId]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newEntry, setNewEntry] = useState({
@@ -85,7 +130,7 @@ const InputControlJournal = ({ chatId }) => {
         setError(null);
 
         try {
-            const token = getAuthToken();
+            const token = tokenRef.current;
             const formData = new FormData();
 
             // Добавляем файл, если он есть
@@ -96,7 +141,7 @@ const InputControlJournal = ({ chatId }) => {
             // Добавляем остальные данные
             const entryData = {
                 ...newEntry,
-                chatId,
+                projectName: chatId,
                 // Удаляем actFile из данных, так как он уже в formData
                 actFile: undefined
             };
@@ -133,24 +178,11 @@ const InputControlJournal = ({ chatId }) => {
         }
     };
 
-    const getAuthToken = () => {
-        const userData = localStorage.getItem("user");
-        if (!userData) {
-            throw new Error("Необходима авторизация");
-        }
 
-        try {
-            const { token } = JSON.parse(userData);
-            return token;
-        } catch (error) {
-            console.error("Ошибка при разборе данных пользователя:", error);
-            throw new Error("Неверный формат данных пользователя");
-        }
-    };
 
     return (
         <div className="journal-container">
-            <h1 className="journal-title">Журнал входного контроля</h1>
+            <h1 className="journal-title">Журнал входного контроля материалов</h1>
             <div className="journal-subtitle">(наименование строительного объекта)</div>
 
             <div className="table-wrapper">
@@ -185,37 +217,38 @@ const InputControlJournal = ({ chatId }) => {
                     </thead>
                     <tbody>
                         {entries.map((entry) => (
-                            <tr key={entry.id}>
-                                <td>{entry.id}</td>
-                                <td>{entry.deliveryDate}</td>
-                                <td>{entry.materialName}</td>
-                                <td>{entry.quantity}</td>
-                                <td>{entry.supplier}</td>
-                                <td>{entry.document}</td>
-                                <td>{entry.inspectionResult}</td>
-                                <td>{entry.labControlDecision}</td>
-                                <td>{entry.labControlResult}</td>
-                                <td className="act-cell">
-                                    {entry.actLink ? (
-                                        <a
-                                            href={entry.actLink}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="act-link"
-                                        >
-                                            Просмотреть акт
-                                        </a>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleUploadClick(entry.id)}
-                                            className="upload-button"
-                                        >
-                                            Загрузить акт
-                                        </button>
-                                    )}
-                                </td>
-                                <td>{entry.inspector}</td>
-                            </tr>
+                            <TableRow data={entry} nUpload={handleUploadClick} />
+                            // <tr key={entry.id}>
+                            //     <td>{entry.id}</td>
+                            //     <td>{entry.deliveryDate}</td>
+                            //     <td>{entry.materialName}</td>
+                            //     <td>{entry.quantity}</td>
+                            //     <td>{entry.supplier}</td>
+                            //     <td>{entry.document}</td>
+                            //     <td>{entry.inspectionResult}</td>
+                            //     <td>{entry.labControlDecision}</td>
+                            //     <td>{entry.labControlResult}</td>
+                            //     <td className="act-cell">
+                            //         {entry.actLink ? (
+                            //             <a
+                            //                 href={entry.actLink}
+                            //                 target="_blank"
+                            //                 rel="noopener noreferrer"
+                            //                 className="act-link"
+                            //             >
+                            //                 Просмотреть акт
+                            //             </a>
+                            //         ) : (
+                            //             <button
+                            //                 onClick={() => handleUploadClick(entry.id)}
+                            //                 className="upload-button"
+                            //             >
+                            //                 Загрузить акт
+                            //             </button>
+                            //         )}
+                            //     </td>
+                            //     <td>{entry.inspector}</td>
+                            // </tr>
                         ))}
                     </tbody>
                 </table>

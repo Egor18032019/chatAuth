@@ -1,9 +1,11 @@
 package auth.chat.real.api;
 
+import auth.chat.real.model.AllJournalEntryResponse;
 import auth.chat.real.model.JournalEntryDto;
 import auth.chat.real.model.JournalEntryResponse;
 import auth.chat.real.store.journals.JournalEntry;
 import auth.chat.real.store.journals.JournalEntryRepository;
+import auth.chat.real.store.project.repository.ProjectRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
@@ -15,21 +17,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import static auth.chat.real.utils.UtilsFunctions.convertToEntity;
+
 import static auth.chat.real.utils.UtilsFunctions.convertToResponse;
 
 @RestController
 @RequestMapping("/api/journal-entries")
 public class JournalEntryController {
     JournalEntryRepository journalEntryRepository;
+    ProjectRepository projectRepository;
 
-    public JournalEntryController(JournalEntryRepository journalEntryRepository) {
+    public JournalEntryController(JournalEntryRepository journalEntryRepository, ProjectRepository projectRepository) {
         this.journalEntryRepository = journalEntryRepository;
+        this.projectRepository = projectRepository;
     }
 
-    private final String UPLOAD_DIR = "uploads/journals/acts/";
+    private final String UPLOAD_DIR = "uploads/journals/";
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> createJournalEntry(
@@ -63,12 +69,10 @@ public class JournalEntryController {
                 fileUrl = "/" + UPLOAD_DIR + uniqueFileName;
             }
 
-            // 4. Сохранение в БД
             JournalEntry entry = convertToEntity(entryDto);
             entry.setActLink(fileUrl);
             JournalEntry savedEntry = journalEntryRepository.save(entry);
 
-            // 5. Возвращаем результат
             JournalEntryResponse response = convertToResponse(savedEntry);
             return ResponseEntity.ok(response);
 
@@ -81,6 +85,43 @@ public class JournalEntryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Внутренняя ошибка сервера");
         }
+    }
+
+
+    @GetMapping("/{projectName}")
+    public ResponseEntity<AllJournalEntryResponse> getJournalEntriesByProjectName(@PathVariable String projectName) {
+
+        if (projectRepository.existsByName(projectName)) {
+            AllJournalEntryResponse response = new AllJournalEntryResponse();
+            response.setJournalEntries(convertToAllJournalEntryResponse(journalEntryRepository.findAllByProject_Name(projectName)));
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private List<JournalEntryResponse> convertToAllJournalEntryResponse(List<JournalEntry> allByProjectName) {
+        List<JournalEntryResponse> response = new ArrayList<>();
+        for (JournalEntry entry : allByProjectName) {
+            response.add(convertToResponse(entry));
+        }
+        return response;
+    }
+
+    public JournalEntry convertToEntity(JournalEntryDto dto) {
+        JournalEntry entry = new JournalEntry();
+        entry.setDeliveryDate(dto.getDeliveryDate());
+        entry.setMaterialName(dto.getMaterialName());
+        entry.setQuantity(dto.getQuantity());
+        entry.setSupplier(dto.getSupplier());
+        entry.setDocument(dto.getDocument());
+        entry.setInspectionResult(dto.getInspectionResult());
+        entry.setLabControlDecision(dto.getLabControlDecision());
+        entry.setLabControlResult(dto.getLabControlResult());
+        entry.setInspector(dto.getInspector());
+        entry.setActLink(dto.getActLink());
+        entry.setProject(projectRepository.findByName(dto.getProjectName()));
+        return entry;
     }
 
 }

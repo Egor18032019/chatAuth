@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessage extends AbstractBaseEntity {
-    private String chatId;
+    private String chatId;// это имя проекта
     private String sender;
     private String content;
     private LocalDateTime timestamp;

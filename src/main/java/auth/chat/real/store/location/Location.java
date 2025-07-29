@@ -29,7 +29,12 @@ public class Location extends AbstractBaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "username")   // колонка в таблице project
     private User user;
-
+    // Руководитель организации 1 и начальник участка(главный инженер) 1
+    // а прорабов уже несколько штук 5
+    // то есть таблицы на начальника и руководителя надо сделать
+    // (один руководитель и много проектов)
+    // (один начальник -> один проект)
+    // и таблицы на прорабов тоже (один прораб один проект)
     // Внешний ключ на пользователя-создателя
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project")   // колонка в таблице project

@@ -91,8 +91,8 @@ const sendChatApi = {
   }
 };
 
-const sendToServer = async (data) => {
-  const token = getAuthToken();
+const sendToServer = async (data, token) => {
+
   const config = {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -109,8 +109,8 @@ const sendToServer = async (data) => {
   }
 };
 
-const giveMeMainProjects = async () => {
-  const token = getAuthToken();
+const giveMeMainProjects = async (token) => {
+
   const config = {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -123,7 +123,7 @@ const giveMeMainProjects = async () => {
 };
 
 const giveMeMainJournalEntry = async (token, project) => {
- 
+
   const config = {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -155,9 +155,47 @@ const downloadWithAuth = async (fileUrl, filename) => {
   link.remove();
   window.URL.revokeObjectURL(url);
 };
+// Сохранение журнала авторского надзора
+const saveAuthorSupervisionJournal = async (token, projectName, data) => {
+  const response = await fetch('/api/author-supervision-journal', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      projectName, // chatId
+      ...data
+    })
+  });
 
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Ошибка сохранения' }));
+    throw new Error(error.message || `Ошибка: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+// Получение журнала авторского надзора
+const getAuthorSupervisionJournal = async (token, projectName) => {
+  const response = await fetch(`/api/author-supervision-journal/${projectName}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) return { data: null }; // Журнал ещё не создан
+    throw new Error('Не удалось загрузить данные');
+  }
+
+  return response.json();
+};
 export {
   sendChatApi,
+  getAuthorSupervisionJournal,
+  saveAuthorSupervisionJournal,
   getHistory,
   giveMeMainJournalEntry,
   giveMeMainProjects,

@@ -23,7 +23,13 @@ const TABS = {
     JOURNAL: 'Журнал работ',
     CHAT: 'Чат с контролем',
 };
-
+const TABS_SUPER_VISION_JOURNALS = {
+    Title : 'Титульный лист',
+    Object: 'Лист обьекта',
+    Specialists: 'Специалисты',
+    Registration : 'Регистрационный лист',
+    Accounting: 'Учетный лист',
+};
 const CONNECTION_STATUS = {
     LAUNCH: 'LAUNCH',
     CONNECTED: 'CONNECTED',
@@ -43,5 +49,6 @@ export {
     TOPIC,
     Status,
     TABS,
+    TABS_SUPER_VISION_JOURNALS,
     CONNECTION_STATUS
 }

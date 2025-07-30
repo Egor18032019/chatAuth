@@ -58,7 +58,7 @@ public class DataInitializer implements CommandLineRunner {
             Project first = new Project("first", LocalDateTime.now(), admin);
             projectRepository.save(first);
             projectRepository.save(new Project("Москва", LocalDateTime.now(), admin));
-
+//todo имя проекта используется для запроса поэтому поменять на id проекта
             projectRepository.save(new Project("2", LocalDateTime.now(), user));
             Project second = new Project("second", LocalDateTime.now(), user);
             projectRepository.save(second);

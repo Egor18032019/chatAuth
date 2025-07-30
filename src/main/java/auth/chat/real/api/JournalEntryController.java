@@ -27,8 +27,8 @@ import static auth.chat.real.utils.UtilsFunctions.convertToResponse;
 @RestController
 @RequestMapping("/api/journal-entries")
 public class JournalEntryController {
-    JournalEntryRepository journalEntryRepository;
-    ProjectRepository projectRepository;
+    private final JournalEntryRepository journalEntryRepository;
+    private final ProjectRepository projectRepository;
 
     public JournalEntryController(JournalEntryRepository journalEntryRepository, ProjectRepository projectRepository) {
         this.journalEntryRepository = journalEntryRepository;

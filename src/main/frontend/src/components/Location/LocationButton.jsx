@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { sendToServer } from '../../services/api';
+import { AuthContext } from "../../providers/AuthProvider"
 import './LocationButton.css';
 const LocationButton = (props) => {
     const [position, setPosition] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const STORAGE_KEY = 'pending_location_data';
+    const { state, dispatch } = useContext(AuthContext)
 
     // Получаем и сохраняем геопозицию с меткой времени
     const handleClick = () => {
@@ -34,7 +36,7 @@ const LocationButton = (props) => {
     // Отправка данных или постановка в очередь
     const handleDataSend = (data) => {
         if (navigator.onLine) {
-            sendToServer(data);
+            sendToServer(data, state.token);
         } else {
             queueData(data);
         }

@@ -1,31 +1,52 @@
-const SupervisionJournal = ({ chatId }) => (
-    <div className="journal-content">
-        <div className="journal-header">
-            <h2>Общий журнал работ - Объект #{chatId}</h2>
-        </div>
-        {/* Контент общего журнала работ */}
-        <div className="entries-list">
-            <div className="entry">
-                <div className="entry-header">
-                    <span className="entry-author">Петров П.П. (Подрядчик)</span>
-                    <span className="entry-date">15.05.2023 14:30</span>
-                </div>
-                <div className="entry-content">
-                    Выполнена укладка асфальта на участке 100 м². Использован материал: асфальтобетон тип Б марки II.
-                </div>
+import React, { useContext, useState, useCallback } from 'react';
+import { AuthContext } from '../../providers/AuthProvider';
+import { TABS_SUPER_VISION_JOURNALS } from '../../utils/const';
+import AuthorSupervisionJournal from './AuthorSupervisionJournal'
+const SupervisionJournal = ({ chatId }) => {
+    const [activeTab, setActiveTab] = useState(TABS_SUPER_VISION_JOURNALS.Title);
+    const tabContent = {
+        [TABS_SUPER_VISION_JOURNALS.Title]: (<div className="chat">
+            <AuthorSupervisionJournal chatId={chatId} />
+        </div>),
+        [TABS_SUPER_VISION_JOURNALS.Object]: (
+            <div className="chat">
+                <h1>Лист обьекта</h1>
             </div>
-        </div>
-        <div className="new-entry-form">
-            <h3>Новая запись в Общий журнал работ:</h3>
-            <textarea
-                className="entry-textarea"
-                placeholder="Опишите выполненную работу или оставьте комментарий..."
-            ></textarea>
-            <div className="entry-actions">
-                <button className="attach-button">Прикрепить файл</button>
-                <button className="submit-button">Отправить</button>
+        ),
+        [TABS_SUPER_VISION_JOURNALS.Specialists]: (
+            <div className="chat">
+                <h1>Специалисты</h1>
             </div>
+        ),
+        [TABS_SUPER_VISION_JOURNALS.Registration]: (
+            <div className="chat">
+                <h1>Регистрационный лист</h1>
+            </div>
+        ),
+        [TABS_SUPER_VISION_JOURNALS.Accounting]: (
+            <div className="chat">
+                <h1>Учетный лист</h1>
+            </div>
+        ),
+
+    };
+
+    return (
+
+        <div className="tabs-container">
+            <div className="tabs">
+                {Object.values(TABS_SUPER_VISION_JOURNALS).map(tab => (
+                    <div
+                        key={tab}
+                        className={`tab ${activeTab === tab ? 'active' : ''}`}
+                        onClick={() => setActiveTab(tab)}
+                    >
+                        {tab}
+                    </div>
+                ))}
+            </div>
+            <div className="tab-content">{tabContent[activeTab]}</div>
         </div>
-    </div>
-);
+    )
+}
 export default SupervisionJournal

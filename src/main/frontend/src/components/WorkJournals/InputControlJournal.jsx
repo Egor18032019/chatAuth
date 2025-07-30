@@ -3,10 +3,12 @@ import React, {
     useEffect,
     useCallback,
     useRef,
+    useContext,
     memo
 } from 'react';
 import './InputControlJournal.css';
 import { giveMeMainJournalEntry } from "../../services/api"
+import { AuthContext } from "../../providers/AuthProvider"
 // ---------- Компонент строки ----------
 const TableRow = memo(({ entry, onUpload }) => (
     <tr key={entry.id}>
@@ -37,28 +39,24 @@ const TableRow = memo(({ entry, onUpload }) => (
 
 
 const InputControlJournal = ({ chatId }) => {
+    const { state, dispatch } = useContext(AuthContext)
     const [entries, setEntries] = useState([
     ]);
-    const tokenRef = useRef(null);
-    const getAuthToken = useCallback(() => {
-        if (tokenRef.current) return tokenRef.current;
-        const { token } = JSON.parse(localStorage.getItem('user') || '{}');
-        if (!token) throw new Error('401');
-        tokenRef.current = token;
-        return token;
-    }, []);
+
+
 
     useEffect(() => {
         if (!chatId) return;
-        getAuthToken();
+
         let ignore = false;
-        giveMeMainJournalEntry(tokenRef.current, chatId)
+        giveMeMainJournalEntry(state.token, chatId)
             .then(res => {
-                console.log(res.data.journalEntries)
                 !ignore && setEntries(res.data.journalEntries)
             }
             )
-            .catch(console.error);
+            .catch(
+                setError('Не удалось загрузить журнал')
+            );
         return () => (ignore = true);
     }, [chatId]);
 
@@ -77,12 +75,12 @@ const InputControlJournal = ({ chatId }) => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const handleUploadClick = (id) => {
+    const handleUploadClick = () => {
         // Создаем скрытый input для выбора файла
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.pdf,.doc,.docx,.jpg,.png';
-        input.onchange = (e) => handleFileChange(id, e);
+        input.onchange = (e) => handleFileChange(e);
         input.click();
     };
     const openModal = () => {
@@ -125,12 +123,13 @@ const InputControlJournal = ({ chatId }) => {
     };
 
     const handleSubmit = async (e) => {
+        if (isLoading) return;
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            const token = tokenRef.current;
+
             const formData = new FormData();
 
             // Добавляем файл, если он есть
@@ -151,7 +150,7 @@ const InputControlJournal = ({ chatId }) => {
             const response = await fetch('/api/journal-entries', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${state.token}`
                     // Content-Type не указываем, браузер сам установит с boundary
                 },
                 body: formData
@@ -217,38 +216,8 @@ const InputControlJournal = ({ chatId }) => {
                     </thead>
                     <tbody>
                         {entries.map((entry) => (
-                            <TableRow data={entry} nUpload={handleUploadClick} />
-                            // <tr key={entry.id}>
-                            //     <td>{entry.id}</td>
-                            //     <td>{entry.deliveryDate}</td>
-                            //     <td>{entry.materialName}</td>
-                            //     <td>{entry.quantity}</td>
-                            //     <td>{entry.supplier}</td>
-                            //     <td>{entry.document}</td>
-                            //     <td>{entry.inspectionResult}</td>
-                            //     <td>{entry.labControlDecision}</td>
-                            //     <td>{entry.labControlResult}</td>
-                            //     <td className="act-cell">
-                            //         {entry.actLink ? (
-                            //             <a
-                            //                 href={entry.actLink}
-                            //                 target="_blank"
-                            //                 rel="noopener noreferrer"
-                            //                 className="act-link"
-                            //             >
-                            //                 Просмотреть акт
-                            //             </a>
-                            //         ) : (
-                            //             <button
-                            //                 onClick={() => handleUploadClick(entry.id)}
-                            //                 className="upload-button"
-                            //             >
-                            //                 Загрузить акт
-                            //             </button>
-                            //         )}
-                            //     </td>
-                            //     <td>{entry.inspector}</td>
-                            // </tr>
+                            <TableRow entry={entry} onUpload={handleUploadClick} />
+
                         ))}
                     </tbody>
                 </table>
@@ -259,141 +228,144 @@ const InputControlJournal = ({ chatId }) => {
             </button>
             {/* Модальное окно для добавления новой строки */}
             {isModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h2>Добавить новую запись</h2>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>Дата доставки:</label>
-                                <input
-                                    type="date"
-                                    name="deliveryDate"
-                                    value={newEntry.deliveryDate}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
 
-                            <div className="form-group">
-                                <label>Наименование материалов:</label>
-                                <input
-                                    type="text"
-                                    name="materialName"
-                                    value={newEntry.materialName}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                        <div className="modal-content">
+                            <h2>Добавить новую запись</h2>
+                            <form key={isModalOpen} onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label>Дата доставки:</label>
+                                    <input
+                                        type="date"
+                                        name="deliveryDate"
+                                        value={newEntry.deliveryDate}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-group">
-                                <label>Количество:</label>
-                                <input
-                                    type="text"
-                                    name="quantity"
-                                    value={newEntry.quantity}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                                <div className="form-group">
+                                    <label>Наименование материалов:</label>
+                                    <input
+                                        type="text"
+                                        name="materialName"
+                                        value={newEntry.materialName}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-group">
-                                <label>Поставщик:</label>
-                                <input
-                                    type="text"
-                                    name="supplier"
-                                    value={newEntry.supplier}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                                <div className="form-group">
+                                    <label>Количество:</label>
+                                    <input
+                                        type="text"
+                                        name="quantity"
+                                        value={newEntry.quantity}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-group">
-                                <label>Документ изготовителя:</label>
-                                <input
-                                    type="text"
-                                    name="document"
-                                    value={newEntry.document}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                                <div className="form-group">
+                                    <label>Поставщик:</label>
+                                    <input
+                                        type="text"
+                                        name="supplier"
+                                        value={newEntry.supplier}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-group">
-                                <label>Результат проверки:</label>
-                                <select
-                                    name="inspectionResult"
-                                    value={newEntry.inspectionResult}
-                                    onChange={handleInputChange}
-                                    required
-                                >
-                                    <option value="">Выберите результат</option>
-                                    <option value="Соответствует">Соответствует</option>
-                                    <option value="Не соответствует">Не соответствует</option>
-                                </select>
-                            </div>
+                                <div className="form-group">
+                                    <label>Документ изготовителя:</label>
+                                    <input
+                                        type="text"
+                                        name="document"
+                                        value={newEntry.document}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-group">
-                                <label>Лабораторный контроль:</label>
-                                <select
-                                    name="labControlDecision"
-                                    value={newEntry.labControlDecision}
-                                    onChange={handleInputChange}
-                                    required
-                                >
-                                    <option value="">Выберите решение</option>
-                                    <option value="Требуется">Требуется</option>
-                                    <option value="Не требуется">Не требуется</option>
-                                </select>
-                            </div>
+                                <div className="form-group">
+                                    <label>Результат проверки:</label>
+                                    <select
+                                        name="inspectionResult"
+                                        value={newEntry.inspectionResult}
+                                        onChange={handleInputChange}
+                                        required
+                                    >
+                                        <option value="">Выберите результат</option>
+                                        <option value="Соответствует">Соответствует</option>
+                                        <option value="Не соответствует">Не соответствует</option>
+                                    </select>
+                                </div>
 
-                            <div className="form-group">
-                                <label>Результат контроля:</label>
-                                <input
-                                    type="text"
-                                    name="labControlResult"
-                                    value={newEntry.labControlResult}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                                <div className="form-group">
+                                    <label>Лабораторный контроль:</label>
+                                    <select
+                                        name="labControlDecision"
+                                        value={newEntry.labControlDecision}
+                                        onChange={handleInputChange}
+                                        required
+                                    >
+                                        <option value="">Выберите решение</option>
+                                        <option value="Требуется">Требуется</option>
+                                        <option value="Не требуется">Не требуется</option>
+                                    </select>
+                                </div>
 
-                            <div className="form-group">
-                                <label>Подпись:</label>
-                                <input
-                                    type="text"
-                                    name="inspector"
-                                    value={newEntry.inspector}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
+                                <div className="form-group">
+                                    <label>Результат контроля:</label>
+                                    <input
+                                        type="text"
+                                        name="labControlResult"
+                                        value={newEntry.labControlResult}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-group">
-                                <label>Акт:</label>
-                                <input
-                                    type="file"
-                                    onChange={handleFileChange}
-                                    accept=".pdf,.doc,.docx,.jpg,.png"
-                                />
-                            </div>
-                            <div className="modal-actions">
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
-                                    className="cancel-button"
-                                    disabled={isLoading}
-                                >
-                                    Отмена
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="submit-button"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? 'Отправка...' : 'Добавить'}
-                                </button>
-                            </div>
-                        </form>
+                                <div className="form-group">
+                                    <label>Подпись:</label>
+                                    <input
+                                        type="text"
+                                        name="inspector"
+                                        value={newEntry.inspector}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Акт:</label>
+                                    <input
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        accept=".pdf,.doc,.docx,.jpg,.png"
+                                    />
+                                </div>
+                                <div className="modal-actions">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="cancel-button"
+                                        disabled={isLoading}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="submit-button"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? 'Отправка...' : 'Добавить'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}

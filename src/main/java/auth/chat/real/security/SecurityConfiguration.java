@@ -63,7 +63,6 @@ public class SecurityConfiguration {
                         .requestMatchers(EndPoint.INFO + "/**").permitAll()
                         .requestMatchers(EndPoint.ADMIN + "/**").hasRole("ADMIN")
                         .requestMatchers(EndPoint.MANAGER + "/**").hasRole("MANAGER")
-//                        .requestMatchers(WS_CHAT + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers("/files/upload" + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers("/api/send" + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")
                         .requestMatchers(EndPoint.API + EndPoint.PROJECT + "/**").hasAnyRole("ADMIN", "USER", "MANAGER")

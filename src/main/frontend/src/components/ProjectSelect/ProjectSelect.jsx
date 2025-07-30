@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../../providers/AuthProvider"
+
 import { giveMeMainProjects } from "../../services/api"
 import './ProjectSelect.css';
 function ProjectSelect({ onSelect }) {
     const [projects, setProjects] = useState([]);
     const [selected, setSelected] = useState("");
+    const { state, dispatch } = useContext(AuthContext)
 
     useEffect(() => {
         // Получение списка проектов с сервера
         const fetchProjects = async () => {
             try {
-                const response = await giveMeMainProjects();
+                const response = await giveMeMainProjects(state.token);
 
                 const data = response.data;
                 setProjects(data);

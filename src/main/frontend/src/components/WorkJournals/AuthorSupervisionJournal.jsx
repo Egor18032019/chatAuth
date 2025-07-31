@@ -3,10 +3,10 @@ import { saveAuthorSupervisionJournal, getAuthorSupervisionJournal } from '../..
 import './AuthorSupervisionJournal.css';
 import { AuthContext } from '../../providers/AuthProvider';
 
-const AuthorSupervisionJournal = ({ chatId }) => {
+const AuthorSupervisionJournal = ({ project }) => {
     const { state } = useContext(AuthContext);
     const [formData, setFormData] = useState({
-        projectName: chatId,
+        projectName: "",
         startDate: '',
         endDate: '',
     });
@@ -18,15 +18,19 @@ const AuthorSupervisionJournal = ({ chatId }) => {
 
     // Загрузка данных при монтировании
     useEffect(() => {
-        if (!chatId) return;
-
+        if (!project) return;
+        setFormData({
+            projectName: project,
+            startDate: '',
+            endDate: '',
+        });
         const loadJournal = async () => {
             try {
                 setIsLoading(true);
 
-                const response = await getAuthorSupervisionJournal(state.token, chatId);
+                const response = await getAuthorSupervisionJournal(state.token, project);
 
-                if (response.data) {
+                if (response.success) {
                     setFormData({
                         projectName: response.data.projectName || '',
                         startDate: response.data.startDate || '',
@@ -34,6 +38,9 @@ const AuthorSupervisionJournal = ({ chatId }) => {
                     });
                     setIsLoad(true)
                     setError(null)
+                } else {
+                    setError(response.message)
+
                 }
             } catch (err) {
                 setError(err.message);
@@ -43,7 +50,7 @@ const AuthorSupervisionJournal = ({ chatId }) => {
         };
 
         loadJournal();
-    }, [chatId]);
+    }, [project]);
 
     // Обработчик изменений
     const handleChange = (e) => {
@@ -59,13 +66,13 @@ const AuthorSupervisionJournal = ({ chatId }) => {
             setError('Заполните обязательные поля');
             return;
         }
-        // formData.projectName = chatId;
+
         console.log(formData)
         setIsLoading(true);
         setError(null);
 
         try {
-            await saveAuthorSupervisionJournal(state.token, chatId, formData);
+            await saveAuthorSupervisionJournal(state.token, project, formData);
             setIsSaved(true);
         } catch (err) {
             setError(err.message);
@@ -74,7 +81,7 @@ const AuthorSupervisionJournal = ({ chatId }) => {
         }
     };
 
-    if (!chatId) {
+    if (!project) {
         return <div>Не указан проект</div>;
     }
 

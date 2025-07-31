@@ -31,7 +31,7 @@ const WorkJournals = ({ chatId }) => {
             case 'input-control':
                 return <InputControlJournal chatId={chatId} />;
             case 'author-supervision':
-                return <SupervisionJournal chatId={chatId} />;
+                return <SupervisionJournal project={chatId} />;
             case 'hidden-works':
                 return <ActsHiddenWorksJournal chatId={chatId} />;
             default:

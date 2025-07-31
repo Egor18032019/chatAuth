@@ -2,11 +2,11 @@ import React, { useContext, useState, useCallback } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
 import { TABS_SUPER_VISION_JOURNALS } from '../../utils/const';
 import AuthorSupervisionJournal from './AuthorSupervisionJournal'
-const SupervisionJournal = ({ chatId }) => {
+const SupervisionJournal = ({ project }) => {
     const [activeTab, setActiveTab] = useState(TABS_SUPER_VISION_JOURNALS.Title);
     const tabContent = {
         [TABS_SUPER_VISION_JOURNALS.Title]: (<div className="chat">
-            <AuthorSupervisionJournal chatId={chatId} />
+            <AuthorSupervisionJournal project={project} />
         </div>),
         [TABS_SUPER_VISION_JOURNALS.Object]: (
             <div className="chat">

@@ -39,7 +39,7 @@ function ProjectSelect({ onSelect }) {
                 <option value="">-- Выберите --</option>
                 {projects.map((project) => (
                     <option key={project.id} value={project.name}>
-                        {project.id} от {project.createDate}
+                        {project.name} от {project.createDate} c   {project.id}
                     </option>
                 ))}
             </select>

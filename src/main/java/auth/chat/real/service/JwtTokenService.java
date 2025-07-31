@@ -1,8 +1,6 @@
 package auth.chat.real.service;
 
 
-
-
 import auth.chat.real.model.JwtAuthenticationResponse;
 import auth.chat.real.store.users.User;
 import io.jsonwebtoken.Claims;
@@ -51,7 +49,7 @@ public class JwtTokenService {
         if (userDetails instanceof User customUserDetails) {
             claims.put("id", customUserDetails.getId());
             claims.put("email", customUserDetails.getEmail());
-            claims.put("role", customUserDetails.getRoles());
+            claims.put("role", customUserDetails.getRole());
         }
         return generateToken(claims, userDetails);
     }
@@ -99,7 +97,8 @@ public class JwtTokenService {
     }
 
     /**
-     * обновление токена
+     * Обновление токена
+     *
      * @param refreshTokenValue старый токен
      * @return новый токен
      */
@@ -107,8 +106,9 @@ public class JwtTokenService {
         var user = userService
                 .userDetailsService()
                 .loadUserByUsername(extractUserName(refreshTokenValue));
-        var jwt =  generateToken(user);
-        return  new JwtAuthenticationResponse(jwt);
+        var jwt = generateToken(user);
+        User userDB = (User) user;
+        return new JwtAuthenticationResponse(jwt, userDB.getRole());
     }
 
     /**

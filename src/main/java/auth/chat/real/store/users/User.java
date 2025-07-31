@@ -28,14 +28,14 @@ public class User extends AbstractBaseEntity implements UserDetails {
     private String password;
     //todo время создание и изменения добавить createdAt updatedAt
     @Column(nullable = false)
-    private final Set<RoleType> roles = new HashSet<>();
+    private RoleType role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        for (RoleType role : roles) {
+
             authorityList.add(new SimpleGrantedAuthority(role.name()));
-        }
+
         return authorityList;
     }
 

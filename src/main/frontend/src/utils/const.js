@@ -20,7 +20,7 @@ const Status = {
     RECEIVED: "RECEIVED"
 };
 const TABS = {
-    JOURNAL: 'Журнал работ',
+    JOURNAL: 'Журналы работ',
     CHAT: 'Чат с контролем',
 };
 const TABS_SUPER_VISION_JOURNALS = {

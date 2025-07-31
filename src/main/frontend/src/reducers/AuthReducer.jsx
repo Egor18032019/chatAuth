@@ -1,7 +1,8 @@
- 
+
 export const initialState = {
     isLoggedIn: false,
     email: '',
+    role: '',
     token: ''
 };
 
@@ -12,14 +13,16 @@ export function authReducer(state, action) {
                 ...state,
                 isLoggedIn: true,
                 email: action.payload.email,
+                role: action.payload.role,
                 token: action.payload.token
             };
         case 'LOGOUT':
             return {
                 ...state,
                 isLoggedIn: false,
-                email: action.payload.email,
-                token: action.payload.token
+                email: "",
+                role: "",
+                token: ""
             };
         default:
             return initialState;

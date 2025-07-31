@@ -5,6 +5,7 @@ import auth.chat.real.model.JwtAuthenticationResponse;
 import auth.chat.real.model.SignInRequest;
 import auth.chat.real.model.SignUpRequest;
 import auth.chat.real.store.users.User;
+import auth.chat.real.utils.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,11 +29,11 @@ public class AuthenticationService {
      */
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
-        var user = new User(request.getUsername(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
+        var user = new User(request.getUsername(), request.getEmail(), passwordEncoder.encode(request.getPassword()), RoleType.ROLE_USER);
         userService.create(user);
 
         var jwt = jwtService.generateToken(user);
-        return new JwtAuthenticationResponse(jwt);
+        return new JwtAuthenticationResponse(jwt, user.getRole());
     }
 
     /**
@@ -49,9 +50,10 @@ public class AuthenticationService {
 
         var user = userService
                 .userDetailsService()
-                .loadUserByUsername( userService.getByEmail(request.getEmail()).getUsername());
+                .loadUserByUsername(userService.getByEmail(request.getEmail()).getUsername());
 
         var jwt = jwtService.generateToken(user);
-        return new JwtAuthenticationResponse(jwt);
+        User userDB = (User) user;
+        return new JwtAuthenticationResponse(jwt, userDB.getRole());
     }
 }

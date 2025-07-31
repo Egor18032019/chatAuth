@@ -43,7 +43,7 @@ public class UserService {
         if (repository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
-        user.getRoles().add(RoleType.ROLE_MANAGER);
+        user.setRole(RoleType.ROLE_USER) ;
         return save(user);
     }
 
@@ -89,7 +89,7 @@ public class UserService {
     @Deprecated
     public void getAdmin() {
         var user = getCurrentUser();
-        user.getRoles().add(RoleType.ROLE_ADMIN);
+        user.setRole(RoleType.ROLE_ADMIN);
         save(user);
     }
 

@@ -89,7 +89,7 @@ const Work = () => {
         <div className="work-container">
             <div className="user-info">
                 <div className="user-avatar">Фото</div>
-                <span>{state.email} (Инспектор)</span>
+                <span>{state.email} ({state.role})</span>
             </div>
 
             <ProjectSelect onSelect={handleProjectSelect} />

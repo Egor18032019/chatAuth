@@ -6,10 +6,8 @@ const Home = () => {
   const navigate = useNavigate()
 
   const onButtonClick = () => {
-    // You'll update this function later
-    console.log("onButtonClick")
     if (state.isLoggedIn) {
-      localStorage.removeItem('user')
+
       dispatch({
         type: 'LOGOUT',
         payload: {

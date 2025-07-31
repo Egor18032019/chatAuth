@@ -65,13 +65,14 @@ const Login = () => {
       })
       .then(data => {
         if (data.token) {
-          localStorage.setItem('user', JSON.stringify({ email, token: data.token }));
-
+          // localStorage.setItem('user', JSON.stringify({ email, token: data.token }));
+          console.log(data.role)
           dispatch({
             type: 'LOGIN',
             payload: {
               email,
               token: data.token,
+              role: data.role,
             },
           });
 

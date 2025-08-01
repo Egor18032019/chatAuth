@@ -1,26 +1,14 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { Status } from "../../utils/const"
-import { downloadWithAuth } from "../../services/api"
+ 
+import { AuthContext } from '../../providers/AuthProvider';
 
 function FileUpload({ chatId, username }) {
     const [file, setFile] = useState(null);
-
+   const { state } = useContext(AuthContext);
     const handleFileChange = (e) => setFile(e.target.files[0]);
 
-    const getAuthToken = () => {
-        const userData = localStorage.getItem("user");
-        if (!userData) {
-            throw new Error("No authentication token found");
-        }
-
-        try {
-            const { token } = JSON.parse(userData);
-            return token;
-        } catch (error) {
-            console.error("Failed to parse user data:", error);
-            throw new Error("Invalid user data in localStorage");
-        }
-    };
+ 
 
     const handleUpload = async () => {
         if (!file) return;
@@ -38,13 +26,13 @@ function FileUpload({ chatId, username }) {
 
         formData.append("message", JSON.stringify(message));
 
-        const token = getAuthToken();
+    
 
         try {
             const response = await fetch("/files/upload", {
                 method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${state.token}`
                     // НЕ указываем Content-Type вручную!
                 },
                 body: formData

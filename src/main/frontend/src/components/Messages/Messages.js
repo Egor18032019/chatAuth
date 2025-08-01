@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
-const Messages = ({ messages, currentUser }) => {
+const Messages = ({ messages, currentUser, chatId }) => {
     const messagesEndRef = useRef(null);
 
     const formatTime = (timestamp) => {
@@ -15,7 +15,7 @@ const Messages = ({ messages, currentUser }) => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [messages]);
+    }, [messages,chatId]);
 
     return (
         <ul className="messages-list">
@@ -40,7 +40,7 @@ const Messages = ({ messages, currentUser }) => {
                                 <span>{` in ${formatTime(timestamp)}`}</span>
                             </div>
                             {/* <div className="text">{content}</div> */}
-                                {/* //todo html иньекция ? придумать лучше ? */}
+                            {/* //todo html иньекция ? придумать лучше ? */}
                             <div className="text"
                                 dangerouslySetInnerHTML={{ __html: content }} />
                         </div>

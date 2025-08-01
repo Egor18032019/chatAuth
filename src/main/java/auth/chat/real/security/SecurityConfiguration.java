@@ -59,6 +59,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request
                         // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
                         .requestMatchers("ws-chat" + "/**").permitAll() //в WebSocketConfig проверяем токен
+                        .requestMatchers("/").permitAll()  //для фронта от сервера
+                        .requestMatchers("/"+ "/work").permitAll()  //для фронта от сервера
+                        .requestMatchers("/static/js"+ "/**").permitAll()  //для фронта от сервера
+                        .requestMatchers("/static/css"+ "/**").permitAll()  //для фронта от сервера
                         .requestMatchers(EndPoint.API + EndPoint.AUTH + "/**").permitAll()
                         .requestMatchers(EndPoint.INFO + "/**").permitAll()
                         .requestMatchers(EndPoint.ADMIN + "/**").hasRole("ADMIN")

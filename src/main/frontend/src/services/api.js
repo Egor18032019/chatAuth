@@ -7,24 +7,10 @@ const api = Axios.create({
   timeout: 10000, // 10 секунд таймаут
 });
 
-// Функция для получения токена с проверкой
-const getAuthToken = () => {
-  const userData = localStorage.getItem("user");
-  if (!userData) {
-    throw new Error("No authentication token found");
-  }
+ 
 
-  try {
-    const { token } = JSON.parse(userData);
-    return token;
-  } catch (error) {
-    console.error("Failed to parse user data:", error);
-    throw new Error("Invalid user data in localStorage");
-  }
-};
-
-const getHistory = async (roomId) => {
-  const token = getAuthToken();
+const getHistory = async (roomId,token) => {
+  
   const config = {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -40,11 +26,11 @@ const getHistory = async (roomId) => {
 
 
 const sendChatApi = {
-  sendMessage: async (chatId, username, text) => {
+  sendMessage: async (chatId, username, text,token) => {
     try {
       console.log(`Sending message from ${username}: ${text}`);
 
-      const token = getAuthToken();
+     
 
       const message = {
         chatId: chatId,
@@ -136,8 +122,8 @@ const giveMeMainJournalEntry = async (token, project) => {
   return response;
 };
 
-const downloadWithAuth = async (fileUrl, filename) => {
-  const token = getAuthToken();
+const downloadWithAuth = async (fileUrl, filename,token) => {
+ 
   const response = await fetch(fileUrl, {
     headers: {
       Authorization: `Bearer ${token}`

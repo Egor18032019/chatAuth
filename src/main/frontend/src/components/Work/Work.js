@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useContext, useState, useCallback,useEffect } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
 import { useStomp } from '../../services/useStomp';
 import { useChatQueue } from '../../services/useChatQueue';
@@ -23,7 +23,12 @@ const Work = () => {
     const [chatId, setChatId] = useState('');
     const { queue, add: addToQueue, flush } = useChatQueue();
     const [stompClient, setStompClient] = useState(null);
-
+    useEffect(() => {
+        setMessages([]); // Очищаем предыдущие сообщения
+        getHistory(chatId, state.token)
+            .then(newMessages => setMessages(newMessages)) // Загружаем историю нового чата
+            .catch(console.error);
+    }, [chatId, state.token]);
     /* ---------- WebSocket ---------- */
     useStomp({
         url: SOCKET_URL,
@@ -33,13 +38,13 @@ const Work = () => {
             setConnectionStatus(CONNECTION_STATUS.CONNECTED);
             setStompClient(client);
             // загрузка истории
-            getHistory(chatId)
+            getHistory(chatId, state.token)
                 .then(setMessages)
                 .catch(console.error);
             // отправка очереди
             flush().forEach(text =>
                 sendChatApi
-                    .sendMessage(chatId, state.email, text)
+                    .sendMessage(chatId, state.email, text, state.token)
                     .catch(err => addToQueue(text))
             );
         },
@@ -62,20 +67,20 @@ const Work = () => {
                 return;
             }
             sendChatApi
-                .sendMessage(chatId, state.email, text)
+                .sendMessage(chatId, state.email, text, state.token)
                 .catch(() => addToQueue(text));
         },
-        [chatId, state.email, state.isLoggedIn, connectionStatus, addToQueue]
+        [chatId, state.email, state.isLoggedIn, connectionStatus, addToQueue,state.token]
     );
 
     /* ---------- Render ---------- */
     if (!state.isLoggedIn) return <div>Пожалуйста, войдите для доступа к чату</div>;
 
     const tabContent = {
-        [TABS.JOURNAL]: <WorkJournals chatId={chatId} />,
+        [TABS.JOURNAL]: <WorkJournals key={chatId} chatId={chatId} />,
         [TABS.CHAT]: (
             <div className="chat">
-                <Messages messages={messages} currentUser={state.email} />
+                <Messages key={chatId} messages={messages} currentUser={state.email} chatId={chatId} />
                 <Input onSendMessage={sendMessage} isConnected={connectionStatus === CONNECTION_STATUS.CONNECTED} />
                 <FileUpload chatId={chatId} username={state.email} stompClient={stompClient} />
                 {queue.length > 0 && (
@@ -84,6 +89,8 @@ const Work = () => {
             </div>
         ),
     };
+
+
 
     return (
         <div className="work-container">
